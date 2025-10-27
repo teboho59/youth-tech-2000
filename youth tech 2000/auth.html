@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login | Youth Tech 2000</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+    <nav>
+        <h1>Youth Tech 2000</h1>
+        <p>Where Innovation meets opportunity</p>
+    </nav>
+
+    <section class="auth container fade-in">
+        <h2>Welcome Back!</h2>
+        <form id="Login-form">
+            <button type="login-btn" type="button">Login</button>
+        </form>
+
+        <button class="btn" onclick="startApp()">Continue to Login</button>
+
+    <script>
+        function startApp() {
+            alert("Welcome! The app is starting...");
+            window.location.href = "dashboard.html";
+        }
+    </script>
+
+        <script>
+            document.getElementById("login-btn").addEventListener("click", () => {
+                window.location.href = "dashboard.html"; 
+             });
+        </script>
+
+        <h3>New Here?</h3>
+        <form id="signup-form">
+            <input type="text" placeholder="Your Name" required/>
+            <input type="email" placeholder="Email" required/>
+            <input type="password" placeholder="Create Password" required/>
+            <button type="signup-btn" type="button">Sign Up</button>
+
+            <script>
+                document.getElementById("signup-btn").addEventListener("click", () => {
+                    window.location.href = "dashboard.html"; 
+                 });
+            </script>
+        </form>
+    </section>
+
+    <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js"></script>
+    <script>
+        const firebaseConfig={
+            apikey:"AIzaSyCaD77hpOWIgCOETJylkPPIxrvF8qCrBZA",
+            authDomain:"youth-tech-2000.firebaseapp.com",
+            projectId:"youth-tech-2000",
+            appId:"1:597556787355:web:3a3c155c0502f160d6ae3e"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+</body>
+</html>

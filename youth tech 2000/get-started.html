@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0,1"/>
+    <title>Get-Started | Youth Tech 2000</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <section id="get-started">
+        <h2>Welcome to Youth Tech 2000</h2>
+        <p>Learn, grow, and build your future in tech.</p>
+        <p>Here’s how to begin...</p>
+        <button id="startBtn">
+            <a href="dashboard.html" style="text-decoration: none; color: white;">Start</a>
+        </button>
+    </section>
+
+    <script>
+        function startApp() {
+            alert("Welcome! The app is starting...");
+            window.location.href = "dashboard.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0,1"/>
+    <title>Youth Tech 2000</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo-container">
+                <img src="images/logo.png.png" alt="Youth Tech 2000 logo" class="logo"/>
+                <h1>Youth Tech 2000</h1>
+            </div>
+                <ul>
+                    <li><a href="get-started.html">Get-Started</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li>><a href="#contact">Contact</a></li>
+             </ul>
+        </nav>
+    </header>
+
+    <section id="hero" class="fade-in">
+        <h2>Empowering the Generation of Innovation in Tech</h2>
+        <p>Join the community of the next youth tech enthusiasts in building the future, regardless of the background and location.</p>
+        <a href="get-started.html">Get-Started</a>
+
+        <script>
+            document.getElementById("get-started-btn").addEventListener("click", () => {
+                window.location.href = "auth.html"; 
+            });
+        </script>
+    </section>
+        
+
+    <section id="Features">
+        <h3>What you will find Inside</h3>
+        <ul>
+            <li>Coding Tutorials and Challenges</li>
+            <li>Mentorship and networking</li>
+            <li>Career and Scholarship resources</li>
+            <li>Learnerships and Interships</li>
+        </ul>
+    </section>
+
+    <section id="Contact">
+        <h3>Contact us</h3>
+        <form>
+            <input type="text" placeholder="Your Name" required/>
+            <input type="email" placeholder="Your email" required/>
+            <textarea placeholder="Your Message" required></textarea>
+            <button type="Sumbit">Send</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy, 2025 Youth Tech 2000. Empowering the next generation through access to skills, education, and employment opportunities. All rights reserved.</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging.js"></script>
+
+    <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCaD77hpOWIgCOETJylkPPIxrvF8qCrBZA",
+        authDomain: "youth-tech-2000.firebaseapp.com",
+        projectId: "youth-tech-2000",
+        storageBucket: "youth-tech-2000.firebasestorage.app",
+        messagingSenderId: "597556787355",
+        appId: "1:597556787355:web:3a3c155c0502f160d6ae3e",
+        measurementId: "G-LZT0LFNPQF"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Initialize Firestore
+    const db = firebase.firestore();
+    </script>
+
+    <script src="get-started.html"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="app.js"></script>
+</body>
+</html>

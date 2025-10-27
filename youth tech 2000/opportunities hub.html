@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opportunities Hub | Youth Tech 2000</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f4f6fa;
+      margin: 0;
+      color: #333;
+    }
+
+    nav {
+      background: #4f46e5;
+      color: white;
+      padding: 1em;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0.5em;
+      font-weight: 500;
+    }
+
+    section {
+      background: white;
+      margin: 1em auto;
+      padding: 1.5em;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 900px;
+    }
+
+    h2, h3 {
+      color: #4f46e5;
+    }
+
+    form, select, input, textarea, button {
+      width: 100%;
+      margin-top: 0.5em;
+      padding: 0.6em;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3730a3;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      justify-content: space-between;
+    }
+
+    .bookmarked-items, .career-milestones, .bursary-list, .application-tracker {
+      background: #fafafa;
+    }
+
+    .opportunity {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 0.8em;
+      margin: 0.5em 0;
+      background: #fefefe;
+    }
+
+    .bookmark-btn {
+      background: #10b981;
+      border: none;
+      color: white;
+      padding: 0.4em 1em;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .bookmark-btn:hover {
+      background: #059669;
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <h1>Youth Tech 2000</h1>
+    <a href="dashboard.html">🏠 Dashboard</a>
+    <a href="events.html">Events</a>
+    <a href="chat.html">Chat</a>
+    <a href="mentor.html">Mentor Portal</a>
+    <a href="challenges.html">Challenges</a>
+  </nav>
+
+  <section class="career-dashboard">
+    <h2>📊 My Career Dashboard</h2>
+    <div id="xp-badges"></div>
+    <div id="goal-tracker"></div>
+    <div id="mentor-feedback"></div>
+    <div id="applications"></div>
+    <div id="milestones"></div>
+    <div id="bookmarks"></div>
+  </section>
+
+  <section class="filters">
+    <select id="location-filter">
+      <option value="All">All Locations</option>
+      <option value="Gauteng">Gauteng</option>
+      <option value="Western Cape">Western Cape</option>
+      <option value="Eastern Cape">Eastern Cape</option>
+      <option value="Northern Cape">Northern Cape</option>
+      <option value="Free State">Free State</option>
+      <option value="Kwazulu Natal">Kwazulu Natal</option>
+      <option value="North West">North West</option>
+      <option value="Limpopo">Limpopo</option>
+      <option value="Mpumalanga">Mpumalanga</option>
+    </select>
+
+    <select id="field-filter">
+      <option value="All">All Fields</option>
+      <option value="IT">Information Technology</option>
+      <option value="Engineering">Engineering</option>
+      <option value="Data Science">Data Science</option>
+      <option value="Software Developer">Software Developer</option>
+      <option value="System analysis">System Analyst</option>
+      <option value="Web Developer">Web Developer</option>
+    </select>
+
+    <select id="skill-filter">
+      <option value="All">All Skills</option>
+      <option value="JavaScript">JavaScript</option>
+      <option value="Firebase">Firebase</option>
+      <option value="HTML">HTML</option>
+      <option value="Python">Python</option>
+      <option value="C#">C#</option>
+    </select>
+
+    <input type="date" id="deadline-filter" />
+  </section>
+
+  <section id="opportunity-list">
+    <h3>💼 Available Opportunities</h3>
+    <div id="opportunities-container"></div>
+  </section>
+
+  <button class="bookmark-btn" onclick="bookmarkOpportunity('internship123', 'SOFTA Full Stack Internship')">Bookmark Example</button>
+
+  <section class="bookmarked-items">
+    <h3>🔖 My Bookmarks</h3>
+    <div id="bookmark-list">
+        <a href="Bookmarks.html">Bookmark</a>
+    </div>
+  </section>
+
+  <section class="career-milestones">
+    <h3>🏆 Career Milestones</h3>
+    <div id="milestone-list">
+        <a href="Milestone.html">Milestones</a>
+    </div>
+  </section>
+
+  <section class="bursary-list">
+    <h3>🎓 Bursaries</h3>
+    <div id="bursary-container">
+        <a href="Bursaries.html">Bursaries</a>
+    </div>
+  </section>
+
+  <section class="application-tracker">
+    <h3>📋 My Applications</h3>
+    <div id="application-list">
+        <a href="Applications.html">Applications
+    </div>
+  </section>
+
+  <section class="mentor-feedback">
+    <h3>🧑‍🏫 Mentor Feedback</h3>
+    <div id="feedback-list"></div>
+  </section>
+
+  <section class="company-profiles">
+    <h3>🏢 Partner Companies</h3>
+    <div id="company-list">
+        <a href="Companies.html">Companies</a>
+    </div>
+  </section>
+
+  <section class="recommend-opportunity">
+    <h3>🤝 Recommend an Opportunity to a Mentee</h3>
+    <form id="recommend-form">
+      <input type="email" id="mentee-email" placeholder="Mentee Email" required />
+      <select id="opportunity-id" required>
+        <option value="">Select Opportunity</option>
+        <option value="web designer">Web Designer</option>
+        <option value="full-stack developer">Full-Stack Developer</option>
+        <option value="programmer">Programmer</option>
+      </select>
+      <textarea id="recommend-note" placeholder="Why this is a good fit"></textarea>
+      <button type="submit">Recommend</button>
+    </form>
+  </section>
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+
+  <script>
+    // ---------------- FIREBASE CONFIG ----------------
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "yourapp.firebaseapp.com",
+      projectId: "yourapp",
+      storageBucket: "yourapp.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ---------------- BOOKMARKS ----------------
+    async function bookmarkOpportunity(id, title) {
+      await db.collection("bookmarks").add({
+        id, title,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert(`✅ ${title} bookmarked!`);
+    }
+
+    db.collection("bookmarks").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+      const list = document.getElementById("bookmark-list");
+      list.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        list.innerHTML += `<div class="opportunity">🔖 ${data.title}</div>`;
+      });
+    });
+
+    // ---------------- RECOMMEND OPPORTUNITY ----------------
+    document.getElementById("recommend-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const mentee = document.getElementById("mentee-email").value;
+      const opportunity = document.getElementById("opportunity-id").value;
+      const note = document.getElementById("recommend-note").value;
+
+      await db.collection("recommendations").add({
+        mentee, opportunity, note,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("🤝 Recommendation sent!");
+      e.target.reset();
+    });
+
+    // ---------------- FILTERS & OPPORTUNITIES ----------------
+    const oppContainer = document.getElementById("opportunities-container");
+
+    function renderOpportunity(title, location, field, skill, deadline) {
+      const div = document.createElement("div");
+      div.classList.add("opportunity");
+      div.innerHTML = `
+        <h4>${title}</h4>
+        <p>📍 ${location} | 💼 ${field} | 🧠 ${skill}</p>
+        <p>🗓️ Deadline: ${deadline}</p>
+        <button class="bookmark-btn" onclick="bookmarkOpportunity('${title}','${title}')">Bookmark</button>
+      `;
+      oppContainer.appendChild(div);
+    }
+
+    // Example static listings (you can replace with Firestore data)
+    const opportunities = [
+      { title: "Google Developer Internship", location: "Gauteng", field: "IT", skill: "JavaScript", deadline: "2025-11-15" },
+      { title: "Data Science Graduate Programme", location: "Western Cape", field: "Data Science", skill: "Python", deadline: "2025-12-01" },
+      { title: "Web Development Apprenticeship", location: "KwaZulu Natal", field: "Web Developer", skill: "HTML", deadline: "2025-11-05" }
+    ];
+
+    function loadOpportunities() {
+      oppContainer.innerHTML = "";
+      const loc = document.getElementById("location-filter").value;
+      const field = document.getElementById("field-filter").value;
+      const skill = document.getElementById("skill-filter").value;
+      const deadline = document.getElementById("deadline-filter").value;
+
+      opportunities.filter(o => {
+        return (loc === "All" || o.location === loc)
+          && (field === "All" || o.field === field)
+          && (skill === "All" || o.skill === skill)
+          && (!deadline || o.deadline <= deadline);
+      }).forEach(o => renderOpportunity(o.title, o.location, o.field, o.skill, o.deadline));
+    }
+
+    document.querySelectorAll("#location-filter, #field-filter, #skill-filter, #deadline-filter").forEach(el => {
+      el.addEventListener("change", loadOpportunities);
+    });
+
+    loadOpportunities();
+  </script>
+</body>
+</html>

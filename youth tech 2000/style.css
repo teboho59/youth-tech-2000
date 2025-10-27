@@ -1,0 +1,910 @@
+/*base styles*/
+* {
+    margin:0 ;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    line-height: 1.6;
+    background-color: antiquewhite;
+    color: #333;
+}
+
+/*Navigation*/
+header{
+    background-color: #1e1e2f;
+    padding: 1rem 2rem;
+    color: #8f94fb;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h1{
+    font-size: 1.5 rem;
+}
+
+nav ul{
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+nav a{
+    color: rgb(124, 95, 56);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover{
+    text-decoration: underline;
+}
+
+.logo-container{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo{
+    height: 40px;
+    width: auto;
+}
+
+/*Hero section*/
+#hero{
+    background: url('images/Youth\ Tech\ 2000.jpg.png') center no-repeat fixed;
+    color: blue;
+    padding: 4rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+#hero::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: azure(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+#hero h2{
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+#hero p{
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.btn{
+    background-color: #fff;
+    color: aquamarine;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover{
+    background-color: azure;
+    transform: scale(1.05);
+}
+
+/*Feacture section*/
+#feacture{
+    padding: 3rem 2rem;
+    background-color: beige;
+}
+
+#feature h3{
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+#feature ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1,1rem;
+}
+
+/*Contact section*/
+#contact{
+    padding: 3rem 2rem;
+    background-color: #f9f9f9;
+}
+
+#contact h3{
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+form{
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+input, textarea{
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+button{
+    background-color: cadetblue;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #3b3fa3;
+}
+
+/*footer*/
+footer{
+    background-color: #6e6e77;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8rem;
+}
+
+/*Responsive*/
+@media(min-width:768px){
+    #feature ul{
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    #feature ul li{
+        flex: 1;
+        text-align: center;
+    }
+}
+
+.fade-in{
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+@keyframes fadeInUp{
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-container{
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background-color:#fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(159, 149, 167, 0.1);
+    text-align: center;
+}
+
+.auth-container h2, .auth-container h3{
+    margin-bottom: 1rem;
+}
+
+.auth-container form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.profile-card{
+    background-color: #9e8b8b;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(158, 146, 168, 0.1);
+    margin-bottom: 2rem;
+}
+
+.resources ul{
+    list-style: none;
+    padding: 0;
+}
+
+.resources li{
+    margin: 0.5rem 0;
+}
+
+.resources a{
+    text-decoration: none;
+    color: #4e54c8;
+    font-weight: bold;
+}
+
+
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #0f0f0f;
+  color: #fff;
+  padding: 20px;
+}
+
+/* Event Form Section */
+.event-form {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  margin: 40px auto;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  animation: normal;
+}
+
+.event-form h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #00ffcc;
+}
+
+.event-form input,
+.event-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 8px;
+  background: #aaa;
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.event-form input::placeholder,
+.event-form textarea::placeholder {
+  color: #aaa;
+}
+
+.event-form button {
+  background-color: #073763;
+  color: #000;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.event-form button:hover {
+  background-color: #3b3fa3;
+}
+
+.my-events {
+  padding: 2rem;
+  background-color: #aaa;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(230, 224, 224, 0.05);
+}
+
+.event-card {
+  background-color: #8f94fb;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid #4e54c8;
+  border-radius: 5px;
+}
+
+.chat-box {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+#chat-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#chat-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#chat-form button {
+  padding: 0.75rem 1rem;
+  background-color: #4e54c8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.mentor-card {
+  background-color: #f0f4ff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid #4e54c8;
+  border-radius: 10px;
+}
+
+.mentor-card img {
+  width: 80px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+}
+
+.challenge-card {
+  background-color: #f0f4ff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid #4e54c8;
+  border-radius: 10px;
+}
+
+.challenge-card button {
+  background-color: #4e54c8;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.leaderboard-entry {
+  background-color: #e0e0ff;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-left: 5px solid #4e54c8;
+  border-radius: 5px;
+}
+
+.challenge {
+  padding: 2rem;
+}
+
+.challenge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.challenge-status h3 {
+  margin-top: 2rem;
+}
+
+#sent-challenges, #received-challenges {
+  background-color: #f0f4ff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  display: contents;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.btn:hover {
+  background-color: #0056b3;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #eef2f6;
+    padding: 40px;
+}
+h1 {
+    color: #4e54c8;
+}
+
+/* --------- base --------- */
+*{box-sizing:border-box}
+html,body{height:25%}
+body{
+  margin:0;
+  background: linear-gradient(#ccc);
+  color:#0f172a;
+  padding: 24px;
+  display: contents;
+  justify-content:center;
+  font-size:16px;
+}
+
+/* central container */
+.container{
+  width:100%;
+  max-width: 100%;
+  margin:0 auto;
+}
+
+/* --------- nav --------- */
+nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+  background: linear-gradient(#aaa);
+  color:#fff;
+  padding:12px 18px;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+}
+
+nav h1{
+  font-size:1.2rem;
+  margin:0;
+  letter-spacing:0.2px;
+}
+
+nav a{
+  color:rgba(255,255,255,0.95);
+  text-decoration:none;
+  margin-left:12px;
+  font-weight:600;
+  font-size:0.95rem;
+  opacity:0.95;
+}
+nav a:hover{
+    opacity:1; 
+    text-decoration: none;
+}
+
+/* --------- dashboard header / intro --------- */
+.Dashboard{
+  background: transparent;
+  margin-top:18px;
+  margin-bottom:18px;
+}
+.Dashboard h2{margin:3px 0 3px 0; font-size:0.5rem}
+.Dashboard p{margin:0 0 12px 0; color:var(--muted)}
+
+/* responsive grid for top area */
+.grid{
+  display:grid;
+  gap:18px;
+  align-items:start;
+}
+
+/* profile card */
+.profile-card{
+  grid-column: span 1;
+  background:var(--card);
+  padding:16px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  min-height:120px;
+}
+.profile-card p{margin:8px 0; color:var(--muted)}
+#edit-profile{margin-top:10px; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:8px 10px; border-radius:8px; cursor:pointer}
+#edit-profile:hover{background:var(--accent); color:#fff; border-color:transparent}
+
+/* --------- notifications --------- */
+.notifications{
+  margin-top:18px;
+  background:#00ffcc;
+  border-radius: 10px;
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+.notifications h2{margin:0 0 8px 0}
+#notification-list{list-style:none; padding:0; margin:0; max-height:140px; overflow:auto}
+.notification{
+  padding:10px;
+  border-radius:8px;
+  background: #00ffcc;
+  margin-bottom:8px;
+  color:#073763;
+  font-weight:600;
+  display:flex;
+  justify-content:space-between;
+}
+
+/* --------- chat --------- */
+#chat-box{
+  margin-top:18px;
+  background: #00ccaa;
+  border-radius: 10px;
+  padding:12px;
+  height:80px;
+  box-shadow: var(--shadow);
+}
+#chat-box p{margin:8px 0; 
+    padding:8px; 
+    border-radius:8px; 
+    background:#f1f5f9
+}
+#chat-form{
+  display: contents;
+  gap:8px;
+  margin-top:8px;
+  align-items: normal;
+}
+#chat-input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:2px;
+  border:1px solid #e6eef8;
+}
+#chat-form button{
+  padding:10px 14px;
+  background: fixed;
+  color:#fff;
+  border:none;
+  border-radius:5px;
+}
+#chat-form button:hover{opacity:0.95}
+
+/* --------- mentor leaderboard --------- */
+.mentor-leaderboard{
+  margin-top:18px;
+  background:var(--card);
+  padding:14px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+#mentor-leaderboard{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap:12px;
+  margin-top:10px;
+}
+.mentor-card{
+  background:fixed;
+  padding:12px;
+  border-radius:10px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border:1px solid #eef6ff;
+}
+.mentor-card img{width:56px;height:56px;border-radius:50%;object-fit:cover}
+.mentor-card h4{margin:0; font-size:1rem}
+.mentor-card p{margin:0;color:var(--muted);font-size:0.9rem}
+
+/* --------- gamified progress --------- */
+.gamified{
+  margin-top:18px;
+  background:var(--card);
+  padding:14px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.xp-bar{background:#007bff;
+    border-radius:99px;
+    padding:6px; 
+    margin:10px 0}
+.xp-fill{
+    background: fixed; 
+    color:#0b74ff; 
+    padding:8px 12px;
+    border-radius:999px; 
+    font-weight:700}
+
+/* badges */
+.badges ul{list-style:none;
+    padding:0;
+    margin:8px 0;
+    display:flex;
+    gap:8px}
+.badges li{
+    background:#fff;
+    padding:8px;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(194, 191, 207, 0.03)}
+
+/* resources */
+.resources{
+  margin-top:18px;
+  background:var(--card);
+  padding:14px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+/* logout button */
+#logout{
+  margin-top:18px;
+  background:var(--danger);
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+#logout:hover{opacity:0.95}
+
+/* edit profile modal area */
+#edit-profile-form{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  width:320px;
+  background:var(--card);
+  padding:12px;
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  z-index:60;
+}
+
+/* calendar styles */
+#calendar{
+  margin-top:18px;
+  background: #007BFF;
+  border-radius:var(--radius);
+  padding:12px;
+  box-shadow:#007bff
+}
+
+/* --------- responsive --------- */
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr}
+  nav{flex-direction:column; align-items:flex-start; gap:10px}
+  #edit-profile-form{right:12px; left:12px; width:auto}
+  body{padding:12px}
+}
+
+/* -------- career dashboard--------*/
+.career-dashboard {
+  padding: 2rem;
+  display: grid;
+  gap: 2rem;
+}
+
+section {
+  background: #f0f4ff;
+  padding: 1rem;
+  border-radius: 0.5px;
+}
+
+h2 {
+  margin-bottom: 0.1rem;
+  color: #4a4a8c;
+}
+
+/* ------bursaries------*/
+.bursary-section {
+  margin-top: 2rem;
+}
+
+.bursary-card {
+  background-color: #f0f4ff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.bursary-card a {
+  color: #2a4dd0;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.bursary-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px;
+    box-shadow: 0 2px 6px rgba(214, 212, 218, 0.829);
+}
+
+.apply-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.apply-btn:hover {
+    background-color: #0056b3;
+}
+
+/*-------milestone------*/
+#career-milestones {
+    margin: 40px;
+    border-left: 4px solid #007bff;
+    padding-left: 20px;
+}
+.milestone {
+    margin-bottom: 20px;
+    position: relative;
+}
+.milestone::before {
+    content: "•";
+    color: #007bff;
+    font-size: 20px;
+    position: absolute;
+    left: -14px;
+    top: 0;
+}
+
+ /* Small scoped stylesheet to create the 3-column challenge layout */
+:root{
+    --accent:#0b74ff; --muted:#6b7280; --bg:#f6f9ff;
+    --card:#ffffff; --radius:10px;
+}
+body{
+    margin:0;
+    font-family:Inter,system-ui,Arial;
+    background:var(--bg); 
+    color:#0f172a}
+  
+.wrap{
+    max-width:1200px;
+    margin:24px auto;
+    padding:16px;
+    display:grid;
+    grid-template-columns:320px 1fr 320px;
+    gap:16px
+}
+@media(max-width:980px){ 
+    .wrap{grid-template-columns:1fr;}
+}
+.panel{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:0 6px 20px rgba(11,35,80,0.06);
+}  
+.instructions{
+    display:flex;
+    flex-direction:column;
+    gap:12px
+}
+.instructions h2{
+    margin:0;
+    font-size:1.05rem
+}
+.editor-area{
+    display:flex;
+    flex-direction:column;
+    height:600px
+}
+.editor-toolbar{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    -bottom:8px
+}
+.btn{
+    padding:8px 12px;
+    border-radius:8px;
+    border:0;
+    cursor:pointer;
+    font-weight:600
+}
+.btn.primary{
+    background:var(--accent);
+    color:white
+}
+.btn.ghost{
+    background:#f3f6ff;
+    border:1px solid #e6eefc
+}
+textarea.code {
+    flex:1;
+    width:100%;
+    min-height:420px;
+    font-family:ui-monospace;
+    font-size:14px;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #e6ebf8;
+    resize:vertical;
+    background:#fbfdff
+}
+.console{
+    background:#0b1220;
+    color:#e6f1ff;
+    padding:12px;
+    border-radius:8px;
+    min-height:120px;
+    overflow:auto;
+    font-family:ui-monospace;
+}
+.tests-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:8px
+}
+.test{
+    padding:8px;
+    border-radius:8px;
+    background:#fbfdff;
+    border:1px solid #eaf1ff;
+    display:flex;
+    align-items:center;
+    gap:10px
+}
+.test.pass{
+    border-color:#d4f1dc;
+    background:#f6fff7
+}
+.test.fail{
+    border-color:#ffd6d6;
+    background:#fff6f6
+}
+.hint{
+    background:#fffbeb;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #fbe7a7;
+    color:#7a5b00
+}
+.muted{
+    color:var(--muted);
+    font-size:0.95rem
+}
+.small{font-size:0.85rem}
+
+/* Packs grid & card */
+.packs-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+.pack-card{padding:14px;border-radius:12px;background:#fff;border:1px solid #eef2f7;box-shadow:0 4px 12px rgba(16,24,40,0.04);display:flex;flex-direction:column;gap:8px}
+.pack-card h3{margin:0;font-size:1.05rem}
+.pack-meta{color:#556;font-size:.95rem}
+.pack-actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+.pack-actions button{padding:8px 10px;border-radius:8px;border:0;cursor:pointer}
+.btn-open{background:#e6f2ff;color:#0b74ff}
+.btn-edit{background:#f3f6ff;color:#0b74ff}
+.btn-clone{background:#fff7ed;color:#b45309}
+.btn-delete{background:#ffe9e9;color:#b91c1c}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,12,20,0.45);z-index:999}
+.modal.hide{display:none}
+.modal-panel{width:100%;max-width:520px;padding:18px;border-radius:12px;background:#fff;box-shadow:0 12px 40px rgba(6,12,20,0.2)}
+.modal-panel label{display:block;margin-bottom:8px;font-size:.95rem}
+.modal-panel input, .modal-panel textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+/* chat styles (if not already present) */
+.chat-container { max-width:720px; margin:18px auto; border:1px solid #e6e9ef; border-radius:12px; overflow:hidden; background:#fff; display:flex; flex-direction:column; }
+.chat-messages { padding:12px; min-height:120px; max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+.chat-input { display:flex; gap:8px; padding:10px; border-top:1px solid #eef2f7; }
+.chat-input input { flex:1; padding:10px; border:1px solid #e6e9ef; border-radius:8px; }
+.chat-input button { padding:10px 14px; border-radius:8px; background:#0b74ff; color:#fff; border:0; cursor:pointer; }
+
+/* dashboard pack shortcard to display as result of message */
+.dashboard-pack { padding:12px; border-radius:12px; background:#fff; border:1px solid #eef2f7; box-shadow:0 6px 20px rgba(16,24,40,0.04); display:flex; flex-direction:column; gap:8px; }
+.dashboard-pack h4 { margin:0; font-size:1rem }
+.dashboard-pack p { margin:0; color:#556; font-size:0.92rem }
+.dashboard-pack .small-actions { display:flex; gap:8px; margin-top:8px }
+.dashboard-pack .small-actions button { padding:6px 8px; border-radius:8px; border:0; cursor:pointer; font-size:.9rem }

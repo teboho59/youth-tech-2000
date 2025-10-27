@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Youth Tech 2000 — Events</title>
+
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --accent:#0b74ff; --bg:#f5f7fb; --card:#fff; --muted:#6b7280; --radius:10px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,var(--bg),#eef3fb);color:#0f172a}
+    nav{display:flex;gap:12px;align-items:center;padding:12px 18px;background:linear-gradient(90deg,var(--accent),#075cc1);color:#fff}
+    nav a{color:white;text-decoration:none;font-weight:600;margin-left:8px}
+    .container{max-width:1100px;margin:18px auto;padding:18px}
+    h1,h2,h3{margin:0 0 8px 0}
+    .grid{display:grid;grid-template-columns: 1fr 380px; gap:18px}
+    @media(max-width:980px){ .grid{grid-template-columns:1fr} }
+
+    /* Left column calendar */
+    .card{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:0 6px 20px rgba(16,24,40,0.06);border:1px solid #eef2f7}
+    .calendar-wrap{min-height:420px}
+
+    /* Right column forms & lists */
+    form input, form textarea, form select, .small-input{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px;background:#fff;resize:vertical;
+    }
+    form label{display:block;margin-top:10px;font-weight:600;color:#222}
+    button{padding:10px 12px;border-radius:8px;border:0;cursor:pointer;background:var(--accent);color:#fff}
+    .muted{color:var(--muted)}
+
+    .list {margin-top:12px;display:flex;flex-direction:column;gap:10px}
+    .event-card{padding:10px;border-radius:8px;background:#fbfdff;border:1px solid #eef6ff;display:flex;flex-direction:column;gap:6px}
+    .event-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:.95rem}
+    .card-actions{display:flex;gap:8px;margin-top:8px}
+    .btn-outline{background:transparent;color:var(--accent);border:1px solid #e6eefc;padding:8px;border-radius:8px}
+    .danger{background:#ffe9e9;color:#b91c1c}
+    .success{background:#dbf4e1;color:#166534}
+
+    /* Modal (simple) */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,12,20,0.45);z-index:999}
+    .modal.hide{display:none}
+    .modal-panel{width:100%;max-width:560px;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(6,12,20,0.2);border:1px solid #eef2f7}
+
+    footer{margin-top:24px;text-align:center;color:var(--muted);font-size:.9rem}
+    small.note{display:block;color:var(--muted);margin-top:8px}
+  </style>
+</head>
+<body>
+  <nav>
+    <div style="font-weight:700">Youth Tech 2000</div>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="chat.html">Chat</a>
+    <a href="mentor.html">Mentor</a>
+    <a href="challenges.html">Challenges</a>
+    <a href="Bookmarks.html">Bookmarks</a>
+  </nav>
+
+  <main class="container">
+    <h1>📅 Events</h1>
+    <p class="muted">Add events, RSVP, message organizers and manage your personal RSVP list. All data is stored locally in your browser.</p>
+
+    <div class="grid" style="margin-top:16px">
+      <!-- Left: Calendar -->
+      <section class="card">
+        <h2 style="margin-bottom:12px">Upcoming Events</h2>
+        <div id="calendar" class="calendar-wrap"></div>
+      </section>
+
+      <!-- Right: Forms / Lists -->
+      <aside>
+        <!-- Add / Edit Event Form -->
+        <div class="card" id="formCard">
+          <h3 id="formTitle">➕ Submit a New Event</h3>
+
+          <form id="eventForm">
+            <input type="hidden" id="eventId" />
+            <label>Title</label>
+            <input id="eventTitle" type="text" placeholder="Event title" required />
+
+            <label>Start date</label>
+            <input id="eventStart" type="date" required />
+
+            <label>End date</label>
+            <input id="eventEnd" type="date" required />
+
+            <label>Location</label>
+            <input id="eventLocation" type="text" placeholder="Town / venue" />
+
+            <label>Description</label>
+            <textarea id="eventDescription" rows="4" placeholder="Short description"></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button id="saveEventBtn" type="submit">Save Event</button>
+              <button id="resetFormBtn" type="button" class="btn-outline">Reset</button>
+            </div>
+
+            <small class="note">Tip: Click an event on the calendar to edit it. RSVP buttons appear on event cards.</small>
+          </form>
+        </div>
+
+        <!-- My RSVP Events -->
+        <div class="card" style="margin-top:12px">
+          <h3>My RSVP Events</h3>
+          <div id="myEventsList" class="list">
+            <!-- populated by JS -->
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="exportBtn" class="btn-outline">Export RSVPs</button>
+            <button id="clearRsvpBtn" class="btn-outline danger">Clear RSVPs</button>
+          </div>
+        </div>
+
+        <!-- Organizer messaging -->
+        <div class="card" style="margin-top:12px">
+          <h3>Message Organizer</h3>
+          <form id="organizerForm">
+            <label>Event</label>
+            <select id="messageEventSelect" class="small-input"></select>
+            <label>Your message</label>
+            <textarea id="organizerMessage" rows="3" placeholder="Message to event organizer" required></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="sendMsgBtn" type="submit">Send</button>
+              <button id="viewMsgsBtn" type="button" class="btn-outline">View Messages</button>
+            </div>
+          </form>
+          <div id="messagesList" style="margin-top:10px" class="list"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <small class="muted">Events stored locally in your browser. To share or sync across devices you'll need a backend or sign-in.</small>
+  </footer>
+
+  <!-- FullCalendar JS -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+  <script>
+  (function () {
+    // Storage keys
+    const EVENTS_KEY = 'yc_events_v1';
+    const RSVPS_KEY = 'yc_rsvps_v1';
+    const MSGS_KEY = 'yc_event_messages_v1';
+
+    // DOM
+    const eventForm = document.getElementById('eventForm');
+    const eventIdEl = document.getElementById('eventId');
+    const titleEl = document.getElementById('eventTitle');
+    const startEl = document.getElementById('eventStart');
+    const endEl = document.getElementById('eventEnd');
+    const locEl = document.getElementById('eventLocation');
+    const descEl = document.getElementById('eventDescription');
+    const resetFormBtn = document.getElementById('resetFormBtn');
+
+    const myEventsList = document.getElementById('myEventsList');
+    const exportBtn = document.getElementById('exportBtn');
+    const clearRsvpBtn = document.getElementById('clearRsvpBtn');
+
+    const messageEventSelect = document.getElementById('messageEventSelect');
+    const organizerForm = document.getElementById('organizerForm');
+    const organizerMessage = document.getElementById('organizerMessage');
+    const messagesList = document.getElementById('messagesList');
+    const viewMsgsBtn = document.getElementById('viewMsgsBtn');
+
+    // State
+    let events = load(EVENTS_KEY) || [];
+    let rsvps = load(RSVPS_KEY) || {}; // { eventId: [email or name strings] } but we'll track simple boolean/array
+    let msgs = load(MSGS_KEY) || {}; // msgs[eventId] = [{id, text, createdAt}]
+
+    // Helpers
+    function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error(e); } }
+    function load(key) { try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch (e) { console.error(e); return null; } }
+    function genId(prefix = 'id') { return prefix + '_' + Math.random().toString(36).slice(2, 9); }
+    function formatDate(d) { // YYYY-MM-DD
+      const dt = new Date(d);
+      const y = dt.getFullYear(); const m = String(dt.getMonth() + 1).padStart(2, '0'); const day = String(dt.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+    function showToast(msg) {
+      const el = document.createElement('div'); el.textContent = msg;
+      Object.assign(el.style, {position:'fixed',right:'18px',bottom:'20px',background:'#222',color:'#fff',padding:'8px 12px',borderRadius:'8px',zIndex:9999});
+      document.body.appendChild(el); setTimeout(()=> el.style.opacity = '0.01', 1500); setTimeout(()=> el.remove(), 2000);
+    }
+
+    // FullCalendar init
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 560,
+      headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
+      events: events.map(evToCalendarEvent),
+      eventClick: function(info) {
+        const ev = events.find(e => e.id === info.event.id);
+        if (!ev) return;
+        // open event in form for editing
+        openEventForEdit(ev.id);
+      }
+    });
+    calendar.render();
+
+    // Convert our event object to FullCalendar event
+    function evToCalendarEvent(ev) {
+      return { id: ev.id, title: ev.title, start: ev.start, end: ev.end ? addOneDay(ev.end) : ev.start }; // FullCalendar all-day: end is exclusive, so add one day for inclusive end.
+    }
+    function addOneDay(dateStr) {
+      if (!dateStr) return dateStr;
+      const d = new Date(dateStr);
+      d.setDate(d.getDate() + 1);
+      return formatDate(d);
+    }
+
+    // Render functions
+    function renderMyEvents() {
+      myEventsList.innerHTML = '';
+      const myList = Object.keys(rsvps).filter(id => rsvps[id] && rsvps[id].length > 0).map(id => events.find(e => e.id === id)).filter(Boolean);
+      if (!myList.length) {
+        myEventsList.innerHTML = '<div class="muted">You have not RSVPed to any events yet.</div>';
+        return;
+      }
+      myList.forEach(ev => {
+        const el = document.createElement('div'); el.className = 'event-card';
+        el.innerHTML = `<strong>${escapeHtml(ev.title)}</strong>
+                        <div class="event-meta">${escapeHtml(ev.location||'')} • ${escapeHtml(ev.start)}${ev.end ? ' — ' + escapeHtml(ev.end) : ''}</div>
+                        <div class="card-actions">
+                          <button class="btn-outline" data-action="view" data-id="${ev.id}">View</button>
+                          <button class="btn-outline danger" data-action="unrsvp" data-id="${ev.id}">Cancel RSVP</button>
+                        </div>`;
+        myEventsList.appendChild(el);
+      });
+    }
+
+    function renderEventSelect() {
+      messageEventSelect.innerHTML = '';
+      events.forEach(ev => {
+        const opt = document.createElement('option');
+        opt.value = ev.id; opt.textContent = `${ev.title} — ${ev.start}${ev.end ? ' – ' + ev.end : ''}`;
+        messageEventSelect.appendChild(opt);
+      });
+      // add placeholder if no events
+      if (!events.length) {
+        const opt = document.createElement('option'); opt.value = ''; opt.textContent = 'No events available'; messageEventSelect.appendChild(opt);
+      }
+    }
+
+    function renderMessagesForEvent(eventId) {
+      messagesList.innerHTML = '';
+      const list = (msgs[eventId] || []);
+      if (!list.length) { messagesList.innerHTML = '<div class="muted">No messages for this event.</div>'; return; }
+      list.slice().reverse().forEach(m => {
+        const el = document.createElement('div'); el.className = 'event-card';
+        el.innerHTML = `<div><strong>${new Date(m.createdAt).toLocaleString()}</strong></div><div class="small">${escapeHtml(m.text)}</div>`;
+        messagesList.appendChild(el);
+      });
+    }
+
+    // Event CRUD
+    eventForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const id = eventIdEl.value || null;
+      const title = titleEl.value.trim();
+      const start = startEl.value;
+      const end = endEl.value;
+      const location = locEl.value.trim();
+      const description = descEl.value.trim();
+      if (!title || !start) return alert('Please provide a title and start date.');
+
+      if (id) {
+        // update
+        const ev = events.find(x => x.id === id);
+        if (!ev) return alert('Event not found');
+        ev.title = title; ev.start = start; ev.end = end || null; ev.location = location; ev.description = description;
+        save(EVENTS_KEY, events);
+        updateCalendarEvents();
+        showToast('Event updated');
+      } else {
+        // create
+        const newEv = { id: genId('ev'), title, start, end: end || null, location, description, createdAt: Date.now() };
+        events.unshift(newEv);
+        save(EVENTS_KEY, events);
+        calendar.addEvent(evToCalendarEvent(newEv));
+        showToast('Event added');
+      }
+
+      resetForm();
+      renderEventSelect();
+      renderMyEvents();
+    });
+
+    resetFormBtn.addEventListener('click', resetForm);
+
+    function resetForm() {
+      eventIdEl.value = '';
+      titleEl.value = '';
+      startEl.value = '';
+      endEl.value = '';
+      locEl.value = '';
+      descEl.value = '';
+      document.getElementById('formTitle').textContent = '➕ Submit a New Event';
+    }
+
+    function openEventForEdit(id) {
+      const ev = events.find(x => x.id === id);
+      if (!ev) return;
+      eventIdEl.value = ev.id;
+      titleEl.value = ev.title || '';
+      startEl.value = ev.start || '';
+      endEl.value = ev.end || '';
+      locEl.value = ev.location || '';
+      descEl.value = ev.description || '';
+      document.getElementById('formTitle').textContent = '✏️ Edit Event';
+      // scroll to form
+      document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateCalendarEvents() {
+      calendar.removeAllEvents();
+      events.forEach(ev => calendar.addEvent(evToCalendarEvent(ev)));
+    }
+
+    // RSVP handling
+    function toggleRsvp(eventId, name = 'You') {
+      if (!eventId) return;
+      rsvps[eventId] = rsvps[eventId] || [];
+      if (rsvps[eventId].includes(name)) {
+        // remove
+        rsvps[eventId] = rsvps[eventId].filter(x => x !== name);
+      } else {
+        rsvps[eventId].push(name);
+      }
+      save(RSVPS_KEY, rsvps);
+      renderMyEvents();
+      showToast('RSVP updated');
+    }
+
+    // Export RSVPs (download JSON)
+    exportBtn.addEventListener('click', () => {
+      const data = JSON.stringify(rsvps, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'rsvps.json'; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    clearRsvpBtn.addEventListener('click', () => {
+      if (!confirm('Clear all your RSVPs?')) return;
+      rsvps = {}; save(RSVPS_KEY, rsvps); renderMyEvents(); showToast('RSVP list cleared');
+    });
+
+    // Organizer messaging
+    organizerForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const eventId = messageEventSelect.value;
+      const text = organizerMessage.value.trim();
+      if (!eventId) return alert('Choose an event to message about');
+      if (!text) return alert('Type a message');
+
+      msgs[eventId] = msgs[eventId] || [];
+      msgs[eventId].push({ id: genId('m'), text, createdAt: Date.now() });
+      save(MSGS_KEY, msgs);
+      organizerMessage.value = '';
+      showToast('Message saved locally');
+      renderMessagesForEvent(eventId);
+    });
+
+    viewMsgsBtn.addEventListener('click', () => {
+      const eventId = messageEventSelect.value;
+      if (!eventId) return alert('Choose an event first');
+      renderMessagesForEvent(eventId);
+    });
+
+    // Utility to escape HTML (simple)
+    function escapeHtml(s) { return (s || '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+    // Click delegation for myEventsList (view/cancel)
+    myEventsList.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action || btn.getAttribute('data-action');
+      const id = btn.dataset.id || btn.getAttribute('data-id');
+      if (!action || !id) return;
+
+      if (action === 'view') {
+        const ev = events.find(x => x.id === id);
+        if (ev) openEventForEdit(id);
+      } else if (action === 'unrsvp') {
+        if (!confirm('Cancel RSVP?')) return;
+        rsvps[id] = []; save(RSVPS_KEY, rsvps); renderMyEvents(); showToast('RSVP cancelled');
+      }
+    });
+
+    // Context: When an event is clicked, we open the form to edit. For editing via separate UI we'll provide delete button in form
+    // Add a delete button in modal? We'll add delete functionality via calendar event edit flow: when editing, user can delete by pressing "Clear" in form (we already have Reset). Let's also provide a quick delete button under the form when editing.
+    // Add Delete button dynamically
+    const deleteBtn = document.createElement('button'); deleteBtn.textContent = 'Delete Event'; deleteBtn.className = 'btn-outline danger'; deleteBtn.style.marginLeft = 'auto';
+    deleteBtn.type = 'button';
+    deleteBtn.addEventListener('click', () => {
+      const id = eventIdEl.value;
+      if (!id) return alert('No event selected to delete');
+      if (!confirm('Delete this event?')) return;
+      events = events.filter(e => e.id !== id);
+      save(EVENTS_KEY, events);
+      updateCalendarEvents();
+      resetForm();
+      renderEventSelect();
+      showToast('Event deleted');
+    });
+    // place delete button after save/reset
+    // find parent div of form buttons
+    const formButtonsDiv = document.querySelector('#eventForm').querySelector('div[style]');
+    if (formButtonsDiv) formButtonsDiv.appendChild(deleteBtn);
+
+    // initial setup
+    renderEventSelect();
+    renderMyEvents();
+    renderMessagesForEvent(messageEventSelect.value || '');
+
+    // helper to reload calendar when events array changes
+    function reloadCalendar() {
+      calendar.removeAllEvents();
+      events.forEach(ev => calendar.addEvent(evToCalendarEvent(ev)));
+    }
+
+    // UI: clicking on event card in calendar (already wired) will open form to edit
+
+    // Ensure calendar shows newly added events
+    // When adding events via form we already call calendar.addEvent. For edits we call updateCalendarEvents.
+
+    // Pre-seed sample events if none exist for better UX (do not overwrite)
+    if (!events || events.length === 0) {
+      events = [
+        { id: genId('ev'), title: 'Youth Tech Workshop', start: formatDate(new Date()), end: null, location: 'Community Hall', description: 'Intro to HTML & CSS' },
+        { id: genId('ev'), title: 'Data Science Webinar', start: formatDate(new Date(new Date().setDate(new Date().getDate()+7))), end: null, location: 'Online', description: 'Getting started with Python' }
+      ];
+      save(EVENTS_KEY, events);
+      // refresh calendar with seeded events
+      updateCalendarEvents();
+      renderEventSelect();
+    }
+
+    // expose some functions for debugging
+    window.ycEvents = {
+      events, rsvps, msgs, reloadCalendar, save
+    };
+
+  })();
+  </script>
+</body>
+</html>

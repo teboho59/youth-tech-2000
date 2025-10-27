@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Challenge — Greeting Genius</title>
+<link rel="stylesheet" href="assets/css/styles.css"> <!-- optional: your global styles -->
+<style>
+  /* Small scoped stylesheet to create the 3-column challenge layout */
+  :root{
+    --accent:#0b74ff; --muted:#6b7280; --bg:#f6f9ff;
+    --card:#ffffff; --radius:10px;
+  }
+  body{margin:0;font-family:Inter,system-ui,Arial; background:var(--bg); color:#0f172a}
+  .wrap{max-width:1200px;margin:24px auto;padding:16px;display:grid;grid-template-columns:320px 1fr 320px;gap:16px}
+  @media(max-width:980px){ .wrap{grid-template-columns:1fr;}}
+  .panel{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 6px 20px rgba(11,35,80,0.06);}
+  .instructions{display:flex;flex-direction:column;gap:12px}
+  .instructions h2{margin:0;font-size:1.05rem}
+  .editor-area{display:flex;flex-direction:column;height:600px}
+  .editor-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+  .btn.primary{background:var(--accent);color:white}
+  .btn.ghost{background:#f3f6ff;border:1px solid #e6eefc}
+  textarea.code {flex:1;width:100%;min-height:420px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;font-size:14px;padding:12px;border-radius:8px;border:1px solid #e6ebf8;resize:vertical;background:#fbfdff}
+  pre.console{background:#0b1220;color:#e6f1ff;padding:12px;border-radius:8px;min-height:120px;overflow:auto;font-family:ui-monospace,monospace}
+  .tests-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .test{padding:8px;border-radius:8px;background:#fbfdff;border:1px solid #eaf1ff;display:flex;align-items:center;gap:10px}
+  .test.pass{border-color:#d4f1dc;background:#f6fff7}
+  .test.fail{border-color:#ffd6d6;background:#fff6f6}
+  .hint{background:#fffbeb;padding:10px;border-radius:8px;border:1px solid #fbe7a7;color:#7a5b00}
+  .muted{color:var(--muted);font-size:0.95rem}
+  .small{font-size:0.85rem}
+</style>
+</head>
+<body>
+ 
+  <nav>
+    <a href="challenges.html">Challenges</a>
+  </nav>
+
+<div class="wrap">
+  <!-- Left: Instructions -->
+  <aside class="panel instructions" aria-labelledby="instrTitle">
+    <div>
+      <h2 id="instrTitle">Challenge: Greeting Bot</h2>
+      <p class="muted">Write a function that returns a greeting for a given name. Use the editor on the right and click <strong>Run tests</strong>.</p>
+    </div>
+
+    <div>
+      <h3 class="small">Requirements</h3>
+      <ul>
+        <li>Export or define a function named <code>greet</code>.</li>
+        <li>When called with a string name, it should return <code>"Hello, &lt;name&gt;!"</code>.</li>
+        <li>Handle empty or missing names by returning <code>"Hello!"</code>.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="small">Examples</h3>
+      <p class="small"><code>greet("Teboho")</code> → <strong>"Hello, Teboho!"</strong></p>
+      <p class="small"><code>greet()</code> → <strong>"Hello!"</strong></p>
+    </div>
+
+    <div>
+      <h3 class="small">Notes</h3>
+      <p class="muted">You can edit the starter code to implement the function. Tests will run in your browser.</p>
+    </div>
+  </aside>
+
+  <!-- Center: Editor -->
+  <main class="panel editor-area" role="main">
+    <div class="editor-toolbar">
+      <button id="runBtn" class="btn primary">Run tests</button>
+      <button id="resetBtn" class="btn ghost">Reset code</button>
+      <button id="hintBtn" class="btn ghost">Show hint</button>
+      <div style="margin-left:auto" class="muted small">Auto-run: <label style="margin-left:6px"><input id="autoRun" type="checkbox" /> yes</label></div>
+    </div>
+
+    <textarea id="codeEditor" class="code" aria-label="Code editor">
+// Starter code — edit this.
+// Define a function named greet that returns a greeting string.
+//
+// Examples:
+//  greet("Teboho") => "Hello, Teboho!"
+//  greet() => "Hello!"
+function greet(name) {
+  // your code here
+  return "Hello!";
+}
+
+// If you want to export for a module-like runner, attach to window:
+// window.challenge = { greet };
+    </textarea>
+
+    <div style="margin-top:12px">
+      <div class="muted small">Output / Console:</div>
+      <pre id="consoleOutput" class="console" aria-live="polite"></pre>
+    </div>
+  </main>
+
+  <!-- Right: Tests -->
+  <aside class="panel">
+    <h3 class="small">Tests</h3>
+    <div id="tests" class="tests-list">
+      <!-- Tests are injected here -->
+    </div>
+
+    <div id="hintBox" class="hint" style="display:none;margin-top:12px">
+      Tip: Check for an empty value — you can use: <code>if (!name) return "Hello!";</code>
+    </div>
+
+    <div style="margin-top:12px" class="muted small">This runs locally in your browser — no code is sent anywhere.</div>
+  </aside>
+</div>
+
+<script>
+/*
+ Simple in-browser test harness.
+ - Executes the code in a safe-ish sandbox using Function()
+ - Runs a small suite of synchronous tests
+ - Shows pass / fail per test and logs to the console panel
+*/
+const editor = document.getElementById('codeEditor');
+const runBtn = document.getElementById('runBtn');
+const resetBtn = document.getElementById('resetBtn');
+const consoleOutput = document.getElementById('consoleOutput');
+const testsEl = document.getElementById('tests');
+const hintBtn = document.getElementById('hintBtn');
+const hintBox = document.getElementById('hintBox');
+const autoRun = document.getElementById('autoRun');
+
+const starter = editor.value;
+
+// Define tests
+const testCases = [
+  { name: 'Should be a function', test: (fn) => typeof fn === 'function', expected: 'function' },
+  { name: 'Greeting with name', test: (fn) => fn('Teboho') === 'Hello, Teboho!', expected: 'Hello, Teboho!' },
+  { name: 'Greeting with another name', test: (fn) => fn('Anele') === 'Hello, Anele!', expected: 'Hello, Anele!' },
+  { name: 'Handle missing name', test: (fn) => fn() === 'Hello!', expected: 'Hello!' },
+  { name: 'Handle empty string', test: (fn) => fn('') === 'Hello!', expected: 'Hello!' }
+];
+
+function clearConsole(){ consoleOutput.textContent = ''; }
+function logConsole(...args){
+  consoleOutput.textContent += args.map(a => (typeof a==='object'? JSON.stringify(a): String(a))).join(' ') + '\\n';
+  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function runTests() {
+  clearConsole();
+  testsEl.innerHTML = '';
+  logConsole('Running tests…');
+
+  // Build the user's code into a function and evaluate it.
+  const userCode = editor.value;
+
+  // We will attempt to extract the greet function:
+  // Method: evaluate user's code in a Function scope that returns window.challenge?.greet or global greet
+  let greetFn = null;
+  try {
+    // Create a sandboxed function wrapper; give it access to window for exports
+    const wrapped = new Function('window', userCode + '\\nreturn (typeof window !== "undefined" && window.challenge && window.challenge.greet) ? window.challenge.greet : (typeof greet === "function" ? greet : null);');
+    greetFn = wrapped(window);
+  } catch (err) {
+    // Syntax error or runtime error during compile
+    logConsole('Error while evaluating code:', err.message || err);
+    // mark all tests as fail with error
+    testCases.forEach((t, i) => {
+      const div = document.createElement('div');
+      div.className = 'test fail';
+      div.textContent = `${t.name} — error evaluating code`;
+      testsEl.appendChild(div);
+    });
+    return;
+  }
+
+  // Run each test
+  let allPassed = true;
+  testCases.forEach((t) => {
+    let passed = false;
+    try {
+      passed = !!t.test(greetFn);
+    } catch (err) {
+      passed = false;
+      logConsole('Test error for', t.name, ':', err.message || err);
+    }
+
+    const div = document.createElement('div');
+    div.className = 'test ' + (passed ? 'pass' : 'fail');
+    div.innerHTML = '<strong>' + t.name + '</strong><div style="margin-left:auto" class="small muted">' + (passed ? 'Passed' : 'Failed') + '</div>';
+    testsEl.appendChild(div);
+
+    if (!passed) {
+      allPassed = false;
+      // show what we expected for helpfulness
+      const hint = document.createElement('div');
+      hint.className = 'small muted';
+      hint.textContent = 'Expected: ' + t.expected;
+      testsEl.appendChild(hint);
+    }
+  });
+
+  if (allPassed) {
+    logConsole('All tests passed ✅');
+  } else {
+    logConsole('Some tests failed ❌');
+  }
+}
+
+// Buttons
+runBtn.addEventListener('click', runTests);
+resetBtn.addEventListener('click', () => { editor.value = starter; clearConsole(); testsEl.innerHTML = ''; hintBox.style.display = 'none'; });
+hintBtn.addEventListener('click', () => hintBox.style.display = hintBox.style.display === 'none' ? 'block' : 'none');
+
+autoRun.addEventListener('change', () => {
+  if (autoRun.checked) {
+    // run whenever editor changes with a small debounce
+    editor.addEventListener('input', autoRunHandler);
+  } else {
+    editor.removeEventListener('input', autoRunHandler);
+  }
+});
+
+let debounceTimer = null;
+function autoRunHandler() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(runTests, 500);
+}
+
+// convenience: run tests initially
+// runTests();
+
+</script>
+</body>
+</html>

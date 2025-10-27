@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Youth Tech 2000 — Dashboard</title>
+
+  <style>
+    /* ---- Basic tokens ---- */
+    :root{
+      --accent:#0b74ff; --accent-600:#075cc1; --muted:#6b7280; --bg:#f5f7fb;
+      --card:#ffffff; --radius:12px; --shadow:0 6px 20px rgba(16,24,40,0.06);
+      --container:1100px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,var(--bg),#eef3fb);color:#0f172a}
+    .container{max-width:var(--container);margin:18px auto;padding:18px}
+    nav.topnav{display:flex;align-items:center;gap:12px;padding:12px 18px;background:linear-gradient(90deg,var(--accent),var(--accent-600));color:#fff;border-radius:12px}
+    nav.topnav h1{margin:0;font-size:1.1rem}
+    nav.topnav a{color:rgba(255,255,255,0.95);font-weight:600;text-decoration:none;margin-left:10px}
+
+    /* layout */
+    .cols{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    @media(max-width:980px){ .cols{grid-template-columns:1fr} }
+
+    /* cards */
+    .card{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid #eef2f7}
+    .small{font-size:0.9rem;color:var(--muted)}
+
+    /* mentors */
+    .mentors-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .mentor-card{padding:12px;border-radius:10px;background:#fff;border:1px solid #eef2f7;display:flex;flex-direction:column;gap:8px}
+    .avatar{height:56px;width:56px;border-radius:10px;background:#f1f5f9;display:inline-block}
+
+    /* chat */
+    .chat-wrap{display:flex;flex-direction:column;gap:10px}
+    .chat-box{min-height:140px;max-height:360px;overflow:auto;padding:10px;background:#fbfdff;border-radius:8px;border:1px solid #eef6ff;display:flex;flex-direction:column;gap:8px}
+    .msg-user{align-self:flex-end;background:var(--accent);color:#fff;padding:8px 12px;border-radius:12px;max-width:80%}
+    .msg-system{align-self:flex-start;background:#eef2ff;color:var(--accent);padding:8px 12px;border-radius:12px;max-width:80%}
+    .chat-controls{display:flex;gap:8px}
+    .chat-controls input{flex:1;padding:10px;border-radius:10px;border:1px solid #e6e9ef}
+    .chat-controls button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+
+    /* packs */
+    .packs-toolbar{display:flex;align-items:center;gap:8px;margin:12px 0}
+    .packs-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .pack-card{padding:12px;border-radius:10px;background:#fff;border:1px solid #eef2f7;display:flex;flex-direction:column;gap:8px}
+    .pack-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .btn{padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.ghost{background:#f3f6ff;color:var(--accent)}
+    .btn.warn{background:#fff7ed;color:#b45309}
+    .btn.danger{background:#ffe9e9;color:#b91c1c}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,12,20,0.45);z-index:999}
+    .modal.hide{display:none}
+    .modal-panel{width:100%;max-width:520px;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(6,12,20,0.2);border:1px solid #eef2f7}
+    .modal-panel input, .modal-panel textarea {width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px}
+
+    /* form small */
+    form.inline{display:flex;gap:8px;align-items:center}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <nav class="topnav container" role="navigation" aria-label="Main">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:#fff"></div>
+      <h1 style="margin:0">Youth Tech 2000</h1>
+    </div>
+
+    <div style="margin-left:auto;display:flex;align-items:center">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="events.html">Events</a>
+      <a href="mentor.html">Mentor Portal</a>
+      <a href="challenges.html">Challenges</a>
+      <a href="opportunities hub.html">Opportunities</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Top row: mentors + chat -->
+    <div class="cols">
+      <section class="card">
+        <h2 style="margin:0">👩‍💻 Mentors</h2>
+        <p class="small">Connect with mentors — message them below.</p>
+        <div style="margin-top:12px" id="mentorList" class="mentors-grid" aria-live="polite"></div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin:0">Profile</h3>
+        <p class="small" style="margin-top:8px">Guest — <a href="login.html">Log in</a> to sync data across devices.</p>
+        <div style="margin-top:12px">
+          <h4 style="margin:0.2rem 0">Quick Links</h4>
+          <ul style="padding-left:18px;margin-top:8px">
+            <li><a href="Bursaries.html">Bursaries</a></li>
+            <li><a href="Applications.html">Learnerships & Internships</a></li>
+            <li><a href="Bookmarks.html">Bookmarks</a></li>
+            <li><a href="challenges.html">Challenges</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Chat and Packs -->
+    <section style="margin-top:18px">
+      <div class="card">
+        <h2 style="margin:0">💬 Mentorship Chat</h2>
+        <p class="small" style="margin:6px 0 12px 0">Type a message. If it matches a pack title, that pack will show below; otherwise a temporary pack is created which you can save.</p>
+
+        <div class="chat-wrap">
+          <div id="chatBox" class="chat-box" aria-live="polite"></div>
+
+          <div class="chat-controls" style="margin-top:8px">
+            <input id="chatInput" type="text" placeholder="Ask: show Uber pack, or describe a pack..." aria-label="Type a message" />
+            <button id="sendBtn" class="btn primary">Send</button>
+          </div>
+        </div>
+
+        <!-- Packs list & toolbar -->
+        <div class="packs-toolbar" style="margin-top:14px;align-items:center">
+          <h3 style="margin:0">Your Packs</h3>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button id="newPackBtn" class="btn primary">+ New Pack</button>
+            <button id="seedBtn" class="btn ghost">Seed Sample</button>
+            <button id="clearBtn" class="btn danger">Clear All</button>
+          </div>
+        </div>
+
+        <div id="packsGrid" class="packs-grid" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- Mentor chat, review -->
+    <section style="margin-top:18px;display:grid;grid-template-columns:1fr 320px;gap:18px">
+      <div class="card">
+        <h3 style="margin:0">Mentor Chat</h3>
+        <div id="mentorChatBox" class="chat-box" style="margin-top:12px"></div>
+        <form id="mentorForm" class="inline" style="margin-top:8px">
+          <input id="mentorInput" placeholder="Message a mentor..." />
+          <button class="btn primary" type="submit">Send</button>
+        </form>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin:0">Leave a Review</h3>
+        <form id="reviewForm" style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+          <textarea id="reviewText" rows="4" placeholder="Write your review..."></textarea>
+          <input id="reviewStars" type="number" min="1" max="5" placeholder="Stars (1-5)" />
+          <button class="btn primary" type="submit">Submit Review</button>
+        </form>
+        <div id="reviewsList" style="margin-top:12px"></div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="container" style="padding:12px 18px">
+    <small class="small">© 2025 Youth Tech 2000</small>
+  </footer>
+
+  <!-- Fully self-contained JS: packs, chat, mentors, mentor chat, reviews -->
+  <script>
+  (function(){
+    const PACK_KEY = 'yc_packs_v2';
+    const MENTOR_KEY = 'yc_mentors_v1';
+    const REVIEW_KEY = 'yc_reviews_v1';
+
+    // DOM refs
+    const mentorList = document.getElementById('mentorList');
+    const chatBox = document.getElementById('chatBox');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    const packsGrid = document.getElementById('packsGrid');
+    const newPackBtn = document.getElementById('newPackBtn');
+    const seedBtn = document.getElementById('seedBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const mentorChatBox = document.getElementById('mentorChatBox');
+    const mentorForm = document.getElementById('mentorForm');
+    const mentorInput = document.getElementById('mentorInput');
+
+    const reviewForm = document.getElementById('reviewForm');
+    const reviewText = document.getElementById('reviewText');
+    const reviewStars = document.getElementById('reviewStars');
+    const reviewsList = document.getElementById('reviewsList');
+
+    // In-memory state
+    let packs = load(PACK_KEY) || samplePacks();
+    let mentors = load(MENTOR_KEY) || sampleMentors();
+    let reviews = load(REVIEW_KEY) || [];
+
+    // Helpers
+    function genId(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+    function save(key, data){ try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) { console.error(e); } }
+    function load(key){ try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch(e){ console.error(e); return null; } }
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function flash(msg){ const el=document.createElement('div'); el.textContent=msg; Object.assign(el.style,{position:'fixed',right:'18px',bottom:'20px',background:'#222',color:'#fff',padding:'8px 12px',borderRadius:'8px',zIndex:9999}); document.body.appendChild(el); setTimeout(()=> el.style.opacity='0.01',1400); setTimeout(()=> el.remove(),1800); }
+
+    // --- Render mentors ---
+    function renderMentors(){
+      mentorList.innerHTML = '';
+      mentors.forEach(m => {
+        const el = document.createElement('div');
+        el.className = 'mentor-card';
+        el.innerHTML = `<div style="display:flex;gap:10px;align-items:center"><div class="avatar" aria-hidden="true"></div><div><strong>${escapeHtml(m.name)}</strong><div class="small">${escapeHtml(m.role)}</div></div></div><p class="small">${escapeHtml(m.bio)}</p><div style="display:flex;gap:8px"><button class="btn ghost" data-mentor="${m.id}">Message</button><a class="small" href="${escapeHtml(m.link||'#')}" target="_blank">Profile</a></div>`;
+        mentorList.appendChild(el);
+      });
+    }
+
+    // Mentor message button -> prefill mentor chat
+    mentorList.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button[data-mentor]');
+      if(!btn) return;
+      const id = btn.dataset.mentor;
+      const m = mentors.find(x => x.id === id);
+      if(!m) return;
+      mentorInput.value = `@${m.name} `;
+      mentorInput.focus();
+    });
+
+    // --- Chat: display + packs integration ---
+    function appendChat(text, who='user'){
+      const el = document.createElement('div');
+      el.className = who === 'user' ? 'msg-user' : 'msg-system';
+      el.textContent = text;
+      chatBox.appendChild(el);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function findPacksByQuery(q){
+      if(!q) return [];
+      q = q.toLowerCase().trim();
+      return packs.filter(p => (p.title && p.title.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q)));
+    }
+
+    function createTempPackFromMessage(msg){
+      const short = msg.length > 40 ? msg.slice(0,40) + '...' : msg;
+      return { id: 'tmp_' + genId('pk'), title: short || 'New Pack', description: 'Created from message: ' + msg, link: '' };
+    }
+
+    function displayTempPack(pack){
+      // Add temporary pack card at the top of packsGrid
+      const el = document.createElement('div');
+      el.className = 'pack-card';
+      el.dataset.id = pack.id;
+      el.innerHTML = `<h4 style="margin:0">${escapeHtml(pack.title)}</h4><div class="small pack-meta">${escapeHtml(pack.description)}</div><div class="pack-actions"><button class="btn ghost" data-action="open-temp">Open</button><button class="btn primary" data-action="save-temp">Save</button><button class="btn danger" data-action="dismiss-temp">Dismiss</button></div>`;
+      packsGrid.prepend(el);
+
+      el.querySelector('[data-action="open-temp"]').addEventListener('click', () => {
+        if(pack.link) window.location.href = pack.link;
+        else alert('This temp pack has no link. Save it to add a link.');
+      });
+      el.querySelector('[data-action="save-temp"]').addEventListener('click', () => {
+        packs.unshift({ id: genId('pk'), title: pack.title, description: pack.description, link: pack.link || '' });
+        save(PACK_KEY, packs);
+        renderPacks();
+        el.remove();
+        flash('Saved to Packs');
+      });
+      el.querySelector('[data-action="dismiss-temp"]').addEventListener('click', () => el.remove());
+    }
+
+    function handleSend(){
+      const txt = (chatInput.value || '').trim();
+      if(!txt) return;
+      appendChat(txt, 'user');
+
+      const matches = findPacksByQuery(txt);
+      if(matches.length){
+        appendChat(`Found ${matches.length} pack(s). Showing on dashboard.`, 'system');
+        // show the matching packs on top by reordering the packs display to bring matches to top (visual)
+        // we'll temporarily render matches first
+        renderPacks(matches.concat(packs.filter(p=>!matches.includes(p))));
+      } else {
+        const tmp = createTempPackFromMessage(txt);
+        displayTempPack(tmp);
+        appendChat('No matching pack found — created a temporary pack. Save it if you want to keep it.', 'system');
+      }
+      chatInput.value = '';
+    }
+
+    sendBtn.addEventListener('click', handleSend);
+    chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
+
+    // --- Packs CRUD + render ---
+    function renderPacks(order){
+      // if order provided (array), use it, else default packs
+      const list = Array.isArray(order) ? order : packs;
+      packsGrid.innerHTML = '';
+      if(!list.length){
+        packsGrid.innerHTML = '<div class="small muted">No packs yet. Create one or send a message to generate a temporary pack.</div>';
+        return;
+      }
+      list.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'pack-card';
+        el.dataset.id = p.id;
+        el.innerHTML = `<h4 style="margin:0">${escapeHtml(p.title)}</h4><div class="small pack-meta">${escapeHtml(p.description || '')}</div><div class="pack-actions"><button class="btn ghost" data-action="open">Open</button><button class="btn ghost" data-action="edit">Edit</button><button class="btn warn" data-action="clone">Clone</button><button class="btn danger" data-action="delete">Delete</button></div>`;
+        // wire actions
+        el.querySelector('[data-action="open"]').addEventListener('click', () => { if(p.link) window.location.href = p.link; else alert('No link set for this pack.'); });
+        el.querySelector('[data-action="edit"]').addEventListener('click', () => openEditModal(p.id));
+        el.querySelector('[data-action="clone"]').addEventListener('click', () => { packs.unshift({...p, id: genId('pk'), title: p.title + ' (Clone)'}); save(PACK_KEY, packs); renderPacks(); flash('Cloned'); });
+        el.querySelector('[data-action="delete"]').addEventListener('click', () => { if(confirm('Delete this pack?')){ packs = packs.filter(x=>x.id!==p.id); save(PACK_KEY, packs); renderPacks(); } });
+        packsGrid.appendChild(el);
+      });
+    }
+
+    // modal for create/edit
+    let modal, modalPanel, modalForm, modalTitle, modalTitleInput, modalDescInput, modalLinkInput, modalCancel;
+    function ensureModal(){
+      if(modal) return;
+      modal = document.createElement('div'); modal.className = 'modal hide';
+      modalPanel = document.createElement('div'); modalPanel.className = 'modal-panel';
+      modalPanel.innerHTML = `<h3 id="modalTitle">Edit Pack</h3><form id="modalForm"><label>Title<input id="modalTitleInput" required /></label><label>Description<textarea id="modalDescInput" rows="4"></textarea></label><label>Link<input id="modalLinkInput" /></label><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button type="submit" class="btn primary">Save</button><button type="button" id="modalCancel" class="btn ghost">Cancel</button></div></form>`;
+      modal.appendChild(modalPanel); document.body.appendChild(modal);
+
+      modalForm = modalPanel.querySelector('#modalForm');
+      modalTitleInput = modalPanel.querySelector('#modalTitleInput');
+      modalDescInput = modalPanel.querySelector('#modalDescInput');
+      modalLinkInput = modalPanel.querySelector('#modalLinkInput');
+      modalCancel = modalPanel.querySelector('#modalCancel');
+
+      modalCancel.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+
+      modalForm.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const title = modalTitleInput.value.trim();
+        const desc = modalDescInput.value.trim();
+        const link = modalLinkInput.value.trim();
+        if(!title) return alert('Title required');
+        if(modal._editingId){
+          const p = packs.find(x=>x.id===modal._editingId);
+          if(p){ p.title = title; p.description = desc; p.link = link; save(PACK_KEY, packs); renderPacks(); flash('Updated'); }
+        } else {
+          packs.unshift({ id: genId('pk'), title, description: desc, link });
+          save(PACK_KEY, packs); renderPacks(); flash('Created'); 
+        }
+        closeModal();
+      });
+    }
+
+    function openEditModal(id){
+      ensureModal();
+      modal._editingId = id || null;
+      modal.classList.remove('hide');
+      modal.setAttribute('aria-hidden','false');
+      if(id){
+        const p = packs.find(x=>x.id===id);
+        if(p){ modalTitleInput.value = p.title; modalDescInput.value = p.description || ''; modalLinkInput.value = p.link || ''; }
+      } else {
+        modalTitleInput.value = ''; modalDescInput.value=''; modalLinkInput.value='';
+      }
+      modalTitleInput.focus();
+    }
+    function closeModal(){ if(modal){ modal.classList.add('hide'); modal.setAttribute('aria-hidden','true'); modal._editingId = null; } }
+
+    // --- Mentor chat / messages ---
+    function appendMentorMsg(text, who='you'){
+      const el = document.createElement('div'); el.className = who === 'you' ? 'msg-user' : 'msg-system'; el.textContent = text;
+      mentorChatBox.appendChild(el); mentorChatBox.scrollTop = mentorChatBox.scrollHeight;
+    }
+    mentorForm.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const txt = (mentorInput.value||'').trim();
+      if(!txt) return;
+      appendMentorMsg(txt, 'you');
+      mentorInput.value = '';
+      // simple simulated mentor reply
+      setTimeout(()=> appendMentorMsg('Mentor reply: Thanks — I will look into this.', 'mentor'), 900);
+    });
+
+    // --- Reviews ---
+    reviewForm.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const text = (reviewText.value||'').trim();
+      const stars = Number(reviewStars.value) || 0;
+      if(!text) return alert('Please write a review');
+      reviews.unshift({ id: genId('rv'), text, stars, createdAt: Date.now() });
+      save(REVIEW_KEY, reviews); renderReviews();
+      reviewText.value=''; reviewStars.value='';
+      flash('Review saved');
+    });
+
+    function renderReviews(){
+      reviewsList.innerHTML = '';
+      if(!reviews.length){ reviewsList.innerHTML = '<div class="small muted">No reviews yet</div>'; return; }
+      reviews.forEach(r => {
+        const el = document.createElement('div'); el.style.marginBottom='8px';
+        el.innerHTML = `<strong>${escapeHtml(r.stars || 0)}★</strong> <div class="small">${escapeHtml(r.text)}</div>`;
+        reviewsList.appendChild(el);
+      });
+    }
+
+    // Buttons
+    newPackBtn.addEventListener('click', () => openEditModal());
+    seedBtn.addEventListener('click', () => { packs = samplePacks(); save(PACK_KEY, packs); renderPacks(); flash('Sample packs seeded'); });
+    clearBtn.addEventListener('click', () => { if(confirm('Clear all packs?')){ packs = []; save(PACK_KEY, packs); renderPacks(); flash('Cleared'); } });
+
+    // initial rendering
+    renderMentors();
+    renderPacks();
+    renderReviews();
+
+    // Sample data
+    function samplePacks(){
+      return [
+        { id: genId('pk'), title: 'Uber App', description: 'Driver & Rider flows + Maps', link: 'uber.html' },
+        { id: genId('pk'), title: 'iYouth Learnership', description: 'Learnership in Tech — apply now', link: 'iyouth-learnership.html' },
+        { id: genId('pk'), title: 'Indeed Internships', description: 'Programming internships list', link: 'https://www.indeed.com' }
+      ];
+    }
+
+    function sampleMentors(){
+      const list = [
+        { id: genId('m'), name: 'Lindiwe M.', role: 'Software Engineer', bio: 'Full-stack dev; loves mentoring juniors.', link: '#' },
+        { id: genId('m'), name: 'Thabo K.', role: 'Data Scientist', bio: 'Python, ML, data pipelines.', link: '#' },
+        { id: genId('m'), name: 'Nomsa P.', role: 'Frontend Dev', bio: 'React & UX', link: '#' }
+      ];
+      // persist sample mentors (only once)
+      try { localStorage.setItem(MENTOR_KEY, JSON.stringify(list)); } catch(e){}
+      return list;
+    }
+
+    // Expose utility for debugging in console
+    window.YT2000 = { packs, mentors, reviews, save, load };
+
+  })();
+  </script>
+</body>
+</html>

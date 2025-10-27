@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YouthConnectSA — Dashboard</title>
+
+  <style>
+    :root{
+      --accent:#0b74ff; --accent-600:#075cc1; --muted:#6b7280; --bg:#f5f7fb;
+      --card:#ffffff; --radius:12px; --shadow:0 6px 20px rgba(16,24,40,0.06);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,var(--bg),#eef3fb);color:#0f172a}
+    .container{max-width:1100px;margin:20px auto;padding:18px}
+    header.site-header{background:linear-gradient(90deg,var(--accent),var(--accent-600));color:#fff;padding:14px 18px;border-radius:12px}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand .logo{height:44px;width:44px;border-radius:8px;background:#fff;display:inline-block}
+    .brand h1{margin:0;font-size:1.15rem}
+    nav.main-nav a{color:rgba(255,255,255,0.95);margin-left:10px;font-weight:600;text-decoration:none}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    @media(max-width:980px){ .layout{grid-template-columns:1fr} }
+
+    /* Packs area */
+    .packs-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .packs-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+    .pack-card{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid #eef2f7;display:flex;flex-direction:column;gap:8px}
+    .pack-card h3{margin:0;font-size:1.05rem}
+    .pack-meta{color:var(--muted);font-size:.95rem}
+    .pack-actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+    .small-btn{padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:#f3f6ff;color:var(--accent)}
+    .btn-warning{background:#fff7ed;color:#b45309}
+    .btn-danger{background:#ffe9e9;color:#b91c1c}
+
+    /* Chat area */
+    .card { background:var(--card); padding:14px; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid #eef2f7; }
+    .chat-container{display:flex;flex-direction:column;gap:10px}
+    .chat-messages{min-height:140px;max-height:350px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:8px;border-radius:8px;background:#fbfdff;border:1px solid #eef6ff}
+    .chat-user{align-self:flex-end;background:var(--accent);color:#fff;padding:8px 12px;border-radius:12px;max-width:80%}
+    .chat-system{align-self:flex-start;background:#eef2ff;color:var(--accent);padding:8px 12px;border-radius:12px;max-width:80%}
+    .chat-input{display:flex;gap:8px}
+    .chat-input input{flex:1;padding:10px;border-radius:10px;border:1px solid #e6e9ef}
+    .chat-input button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+
+    /* Aside / right column */
+    aside.right-col{display:flex;flex-direction:column;gap:12px}
+    .muted{color:var(--muted)}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,12,20,0.45);z-index:999}
+    .modal.hide{display:none}
+    .modal-panel{width:100%;max-width:520px;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(6,12,20,0.2);border:1px solid #eef2f7}
+    .modal-panel label{display:block;margin-bottom:8px;font-size:.95rem}
+    .modal-panel input, .modal-panel textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+    /* small utility */
+    .flex-row{display:flex;align-items:center;gap:8px}
+    .center{text-align:center}
+    footer.site-footer{margin-top:18px;padding:12px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <h1>Youth Tech 2000</h1>
+          <div class="muted small">Dashboard</div>
+        </div>
+      </div>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="Bursaries.html">Bursaries</a>
+        <a href="Applications.html">Applications</a>
+        <a href="Bookmarks.html">Bookmarks</a>
+        <a href="challenges.html">Challenges</a>
+        <a href="opportunities hub.html">Opportunities</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="layout">
+      <!-- Left / main column -->
+      <section>
+        <!-- Chat -->
+        <div class="card">
+          <div class="flex-row" style="justify-content:space-between">
+            <h2 style="margin:0">Chat & Quick Actions</h2>
+            <div class="muted small">Type a message to show related packs</div>
+          </div>
+
+          <div class="chat-container" style="margin-top:12px">
+            <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+            <div class="chat-input">
+              <input id="messageInput" type="text" placeholder="Ask: show Uber pack, or type any message to create a pack..." />
+              <button id="sendBtn" title="Send message">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Packs toolbar -->
+        <div class="packs-toolbar" style="margin-top:16px">
+          <h2 style="margin:0">Your Packs</h2>
+          <div style="margin-left:auto" class="flex-row">
+            <button id="createPackBtn" class="small-btn btn-primary">+ New Pack</button>
+            <button id="importSampleBtn" class="small-btn btn-ghost">Seed Sample</button>
+            <button id="clearPacksBtn" class="small-btn btn-danger">Clear All</button>
+          </div>
+        </div>
+
+        <!-- Packs grid -->
+        <div id="packsGrid" class="packs-grid" aria-live="polite"></div>
+      </section>
+
+      <!-- Right column -->
+      <aside class="right-col">
+        <div class="card">
+          <h3 style="margin-top:0">Quick Links</h3>
+          <ul style="padding-left:18px;margin:8px 0 0 0">
+            <li><a href="Bursaries.html">Bursaries</a></li>
+            <li><a href="Applications.html">Learnerships & Internships</a></li>
+            <li><a href="Bookmarks.html">Bookmarks</a></li>
+            <li><a href="challenges.html">Practice Challenges</a></li>
+            <li><a href="events.html">Events</a></li>
+          </ul>
+        </div>
+
+        <div class="card center">
+          <h3 style="margin:0">Profile</h3>
+          <p class="muted small" style="margin-top:8px">Guest mode — register to save across devices</p>
+          <div style="margin-top:10px"><a href="login.html" class="small-btn btn-ghost">Log in</a></div>
+        </div>
+
+        <div class="card">
+          <h4 style="margin:0">How it works</h4>
+          <p class="muted small" style="margin-top:8px">Send a message. If it matches pack titles, they appear above. Otherwise a temporary pack is created and you can save it to your packs list.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Edit / Create modal -->
+  <div id="packModal" class="modal hide" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="packModalTitle">
+      <h3 id="packModalTitle">Edit Pack</h3>
+      <form id="packForm">
+        <label>Title
+          <input id="packTitle" required />
+        </label>
+
+        <label>Description
+          <textarea id="packDesc" rows="4"></textarea>
+        </label>
+
+        <label>Link (optional)
+          <input id="packLink" placeholder="uber.html or https://..." />
+        </label>
+
+        <div class="modal-actions">
+          <button type="submit" class="small-btn btn-primary">Save</button>
+          <button type="button" id="packCancel" class="small-btn btn-ghost">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small class="muted">© 2025 YouthConnectSA — Dashboard</small>
+    </div>
+  </footer>
+
+  <script>
+  (function(){
+    const STORAGE_KEY = 'yc_packs_v2';
+
+    // DOM refs
+    const packsGrid = document.getElementById('packsGrid');
+    const createPackBtn = document.getElementById('createPackBtn');
+    const importSampleBtn = document.getElementById('importSampleBtn');
+    const clearPacksBtn = document.getElementById('clearPacksBtn');
+
+    // modal
+    const modal = document.getElementById('packModal');
+    const packForm = document.getElementById('packForm');
+    const titleEl = document.getElementById('packTitle');
+    const descEl = document.getElementById('packDesc');
+    const linkEl = document.getElementById('packLink');
+    const packCancel = document.getElementById('packCancel');
+    const modalTitle = document.getElementById('packModalTitle');
+
+    // chat
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('messageInput');
+    const chatMessages = document.getElementById('chatMessages');
+
+    // in-memory state
+    let packs = loadPacks();
+    let editingId = null; // null => create, otherwise edit
+
+    // --- Utility functions ---
+    function genId(){ return 'pk_' + Math.random().toString(36).slice(2,9); }
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function flash(msg){ const el=document.createElement('div'); el.textContent=msg; Object.assign(el.style,{position:'fixed',right:'18px',bottom:'20px',background:'#222',color:'#fff',padding:'8px 12px',borderRadius:'8px',zIndex:9999}); document.body.appendChild(el); setTimeout(()=> el.style.opacity='0.01',1400); setTimeout(()=> el.remove(),1800); }
+
+    // --- Storage ---
+    function loadPacks(){
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : samplePacks();
+      } catch(e){ console.error(e); return samplePacks(); }
+    }
+    function savePacks(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(packs)); }
+
+    // --- Render packs grid ---
+    function renderPacks(){
+      packsGrid.innerHTML = '';
+      if(!packs || packs.length === 0){
+        packsGrid.innerHTML = '<div class="muted">No packs yet — create one or send a message to generate a pack.</div>';
+        return;
+      }
+      packs.forEach(p => {
+        const el = document.createElement('article');
+        el.className = 'pack-card';
+        el.dataset.id = p.id;
+        el.innerHTML = `
+          <h3>${escapeHtml(p.title)}</h3>
+          <div class="pack-meta">${escapeHtml(p.description || '')}</div>
+          <div class="pack-actions">
+            <button data-action="open" class="small-btn btn-ghost">Open</button>
+            <button data-action="edit" class="small-btn btn-ghost">Edit</button>
+            <button data-action="clone" class="small-btn btn-warning">Clone</button>
+            <button data-action="delete" class="small-btn btn-danger">Delete</button>
+          </div>
+        `;
+        packsGrid.appendChild(el);
+      });
+    }
+
+    // --- Pack CRUD ---
+    function addPack({ title, description, link }){
+      const p = { id: genId(), title: title || 'Untitled', description: description || '', link: link || '', createdAt: Date.now() };
+      packs.unshift(p);
+      savePacks();
+      renderPacks();
+      flash('Pack added');
+      return p;
+    }
+    function updatePack(id, { title, description, link }){
+      const p = packs.find(x => x.id === id);
+      if(!p) return;
+      p.title = title; p.description = description; p.link = link; p.updatedAt = Date.now();
+      savePacks(); renderPacks(); flash('Pack updated');
+    }
+    function clonePack(id){
+      const p = packs.find(x => x.id === id);
+      if(!p) return;
+      const copy = { ...p, id: genId(), title: p.title + ' (Clone)', createdAt: Date.now() };
+      packs.unshift(copy); savePacks(); renderPacks(); flash('Pack cloned');
+    }
+    function deletePack(id){
+      packs = packs.filter(x => x.id !== id); savePacks(); renderPacks(); flash('Pack deleted');
+    }
+
+    // --- Modal helpers ---
+    function openModalForCreate(){
+      editingId = null; modalTitle.textContent = 'Create Pack'; titleEl.value=''; descEl.value=''; linkEl.value=''; openModal();
+    }
+    function openModalForEdit(id){
+      const p = packs.find(x => x.id === id); if(!p) return;
+      editingId = id; modalTitle.textContent = 'Edit Pack'; titleEl.value = p.title; descEl.value = p.description || ''; linkEl.value = p.link || ''; openModal();
+    }
+    function openModal(){ modal.classList.remove('hide'); modal.setAttribute('aria-hidden','false'); titleEl.focus(); }
+    function closeModal(){ modal.classList.add('hide'); modal.setAttribute('aria-hidden','true'); editingId = null; packForm.reset(); }
+
+    // --- Event wiring ---
+    createPackBtn.addEventListener('click', openModalForCreate);
+    importSampleBtn.addEventListener('click', () => { packs = samplePacks(); savePacks(); renderPacks(); flash('Sample packs added'); });
+    clearPacksBtn.addEventListener('click', () => { if(confirm('Clear ALL packs?')){ packs = []; savePacks(); renderPacks(); }});
+
+    // Pack actions (delegated)
+    packsGrid.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button[data-action]');
+      if(!btn) return;
+      const card = btn.closest('.pack-card');
+      const id = card && card.dataset.id;
+      if(!id) return;
+      const action = btn.dataset.action;
+      if(action === 'open'){ const p = packs.find(x=>x.id===id); if(p && p.link) window.location.href = p.link; else alert('No link for this pack.'); }
+      else if(action === 'edit') openModalForEdit(id);
+      else if(action === 'clone') clonePack(id);
+      else if(action === 'delete') { if(confirm('Delete this pack?')) deletePack(id); }
+    });
+
+    // Modal form submit: create or update
+    packForm.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const data = { title: titleEl.value.trim(), description: descEl.value.trim(), link: linkEl.value.trim() };
+      if(!data.title) return alert('Title is required');
+      if(editingId) updatePack(editingId, data); else addPack(data);
+      closeModal();
+    });
+    packCancel.addEventListener('click', closeModal);
+
+    // close modal on outside/Escape
+    modal.addEventListener('click', (ev) => { if(ev.target === modal) closeModal(); });
+    document.addEventListener('keydown', (ev) => { if(ev.key === 'Escape') closeModal(); });
+
+    // --- Chat behavior: show packs when message sent or create temp pack ---
+    function appendChatMessage(text, role='user'){
+      const div = document.createElement('div'); div.className = role === 'user' ? 'chat-user' : 'chat-system'; div.textContent = text;
+      chatMessages.appendChild(div); chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function findMatchingPacks(message){
+      const q = (message || '').trim().toLowerCase();
+      if(!q) return [];
+      return packs.filter(p => (p.title && p.title.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q)));
+    }
+
+    function createTempPackFromMessage(message){
+      const short = message.length > 40 ? message.slice(0,40) + '...' : message;
+      return { id: 'tmp_' + genId(), title: short || 'New Pack', description: 'Created from message: ' + message, link: '', createdAt: Date.now() };
+    }
+
+    function displayPackOnDashboard(pack){
+      if(pack.id && pack.id.startsWith('tmp_')){
+        const el = document.createElement('article'); el.className='pack-card'; el.dataset.id = pack.id;
+        el.innerHTML = `
+          <h3>${escapeHtml(pack.title)}</h3>
+          <div class="pack-meta">${escapeHtml(pack.description)}</div>
+          <div class="pack-actions">
+            <button class="small-btn btn-ghost" data-action="open-temp">Open</button>
+            <button class="small-btn btn-primary" data-action="save-temp">Save to Packs</button>
+            <button class="small-btn btn-danger" data-action="dismiss-temp">Dismiss</button>
+          </div>`;
+        packsGrid.prepend(el);
+
+        el.querySelector('[data-action="open-temp"]').addEventListener('click', () => { if(pack.link) window.location.href=pack.link; else alert('No link for this temp pack. Save it to add a link.'); });
+        el.querySelector('[data-action="save-temp"]').addEventListener('click', () => { addPack({ title: pack.title, description: pack.description, link: pack.link }); el.remove(); });
+        el.querySelector('[data-action="dismiss-temp"]').addEventListener('click', () => el.remove());
+        return;
+      }
+      renderPacks();
+    }
+
+    // Send message handler
+    function handleSendMessage(){
+      const text = (messageInput.value || '').trim();
+      if(!text) return;
+      appendChatMessage(text, 'user');
+
+      const matches = findMatchingPacks(text);
+      if(matches.length > 0){
+        matches.slice(0,5).forEach(m => displayPackOnDashboard(m));
+        appendChatMessage(`Found ${matches.length} matching pack(s). Displayed on dashboard.`, 'system');
+      } else {
+        const tmp = createTempPackFromMessage(text);
+        displayPackOnDashboard(tmp);
+        appendChatMessage('No exact match found — created a temporary pack from your message. You can Save to Packs.', 'system');
+      }
+      messageInput.value = '';
+    }
+
+    sendBtn.addEventListener('click', handleSendMessage);
+    messageInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSendMessage(); });
+
+    // initial render
+    renderPacks();
+
+    // --- sample packs helper ---
+    function samplePacks(){
+      return [
+        { id: genId(), title: 'Uber App', description: 'Driver & Rider flows + Maps', link: 'uber.html', createdAt: Date.now() },
+        { id: genId(), title: 'Learnership', description: 'Learnership in Tech — apply now', link: 'iyouth-learnership.html', createdAt: Date.now() },
+        { id: genId(), title: 'Internships', description: 'Programming internships collection', link: 'https://www.indeed.com/', createdAt: Date.now() }
+      ];
+    }
+
+  })();
+  </script>
+</body>
+</html>

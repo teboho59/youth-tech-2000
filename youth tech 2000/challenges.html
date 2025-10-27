@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Challenges | Youth Tech 2000</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    nav {
+      background: #4f46e5;
+      padding: 1em;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      color: white;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    select, input, textarea, button {
+      padding: 0.6em;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 0.6em;
+      width: 100%;
+      max-width: 400px;
+    }
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #4338ca;
+    }
+    section {
+      background: white;
+      margin: 1em auto;
+      padding: 1em;
+      border-radius: 8px;
+      max-width: 900px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2, h3 {
+      color: #1f2937;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      padding: 0.5em 0;
+    }
+    #leaderboard div {
+      margin: 0.5em 0;
+      padding: 0.4em;
+      background: #eef2ff;
+      border-radius: 6px;
+    }
+    .fade-in {
+      animation: fadeIn 0.8s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <h1>Youth Tech 2000</h1>
+    <a href="dashboard.html">🏠 Dashboard</a>
+    <a href="events.html">Events</a>
+    <a href="chat.html">Chat</a>
+    <a href="mentor.html">Mentor Portal</a>
+    <a href="opportunities-hub.html">Opportunities</a>
+  </nav>
+
+  <section class="filters">
+    <select id="challenge-filter">
+      <option value="All">All Levels</option>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+
+    <select id="skill-filter">
+      <option value="All">All Skills</option>
+      <option value="Frontend">Frontend</option>
+      <option value="Firebase">Firebase</option>
+      <option value="UX">UX</option>
+    </select>
+  </section>
+
+  <section class="leaderboard fade-in">
+    <h2>🏆 Top Learners</h2>
+    <div id="leaderboard"></div>
+  </section>
+
+  <section class="challenge-list fade-in">
+    <h2>🎯 Challenges</h2>
+    <div id="challenge-container">
+      <ul id="challenge-list">
+        <a href="coding task.html">Activity</a>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>📋 Save Challenge Template</h2>
+    <form id="template-form">
+      <input type="text" id="template-title" placeholder="Template Title" required />
+      <textarea id="template-notes" placeholder="Notes or goals"></textarea>
+      <div id="template-challenges"></div>
+      <button type="submit">Save Template</button>
+    </form>
+    <button id="use-template-btn">Use This Template</button>
+  </section>
+
+  <section class="challenge fade-in">
+    <h2>🎮 Challenge a Friend</h2>
+
+    <form id="friend-challenge-form">
+      <input type="email" id="friend-email" placeholder="Friend’s email" required />
+      <select id="challenge-id" required>
+        <option value="">Select Challenge</option>
+        <option value="Calculator App">Calculator App</option>
+        <option value="Quiz App">Quiz App</option>
+        <option value="Travel Agency Page">Travel Agency Page</option>
+        <option value="ContactBook">ContactBook</option>
+      </select>
+      <button type="submit">Challenge Friend</button>
+    </form>
+  </section>
+
+  <section class="challenge-status fade-in">
+    <h3>📤 Challenges You Sent</h3>
+    <div id="sent-challenges"></div>
+
+    <h3>📥 Challenges You Received</h3>
+    <div id="received-challenges"></div>
+  </section>
+
+  <section class="challenge-packs fade-in">
+    <h2>🎉 Seasonal Challenge Packs</h2>
+    <div id="pack-container"></div>
+  </section>
+
+  <section class="daily-challenge fade-in">
+    <h3>🔥 Daily Challenge</h3>
+    <div id="daily-challenge"></div>
+  </section>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+
+  <script>
+    /* ---------------- FIREBASE CONFIG ---------------- */
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "yourapp.firebaseapp.com",
+      projectId: "yourapp",
+      storageBucket: "yourapp.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    /* ---------------- LOAD LEADERBOARD ---------------- */
+    async function loadLeaderboard() {
+      const snapshot = await db.collection("leaderboard").orderBy("points", "desc").limit(10).get();
+      const leaderboard = document.getElementById("leaderboard");
+      leaderboard.innerHTML = "";
+      snapshot.forEach(doc => {
+        const user = doc.data();
+        leaderboard.innerHTML += `<div>🏅 ${user.name} — ${user.points} pts</div>`;
+      });
+    }
+
+    /* ---------------- LOAD CHALLENGES ---------------- */
+    async function loadChallenges() {
+      const snapshot = await db.collection("challenges").get();
+      const list = document.getElementById("challenge-list");
+      list.innerHTML = "";
+      snapshot.forEach(doc => {
+        const ch = doc.data();
+        list.innerHTML += `<li><strong>${ch.title}</strong> <small>(${ch.level} - ${ch.skill})</small></li>`;
+      });
+    }
+
+    /* ---------------- SAVE TEMPLATE ---------------- */
+    document.getElementById("template-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      const title = document.getElementById("template-title").value;
+      const notes = document.getElementById("template-notes").value;
+
+      await db.collection("templates").add({
+        title, notes,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("Template saved!");
+      e.target.reset();
+    });
+
+    /* ---------------- CHALLENGE FRIEND ---------------- */
+    document.getElementById("friend-challenge-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      const email = document.getElementById("friend-email").value;
+      const challenge = document.getElementById("challenge-id").value;
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert("Please sign in to send a challenge.");
+        return;
+      }
+
+      await db.collection("friendChallenges").add({
+        from: user.email,
+        to: email,
+        challenge,
+        status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert(`Challenge sent to ${email}!`);
+      e.target.reset();
+    });
+
+    /* ---------------- LOAD SENT/RECEIVED ---------------- */
+    auth.onAuthStateChanged(async user => {
+      if (!user) return;
+
+      // Sent
+      db.collection("friendChallenges").where("from", "==", user.email)
+        .onSnapshot(snapshot => {
+          const sentDiv = document.getElementById("sent-challenges");
+          sentDiv.innerHTML = "";
+          snapshot.forEach(doc => {
+            const ch = doc.data();
+            sentDiv.innerHTML += `<div>📤 Sent to ${ch.to}: ${ch.challenge}</div>`;
+          });
+        });
+
+      // Received
+      db.collection("friendChallenges").where("to", "==", user.email)
+        .onSnapshot(snapshot => {
+          const recvDiv = document.getElementById("received-challenges");
+          recvDiv.innerHTML = "";
+          snapshot.forEach(doc => {
+            const ch = doc.data();
+            recvDiv.innerHTML += `<div>📥 From ${ch.from}: ${ch.challenge}</div>`;
+          });
+        });
+    });
+
+    /* ---------------- LOAD SEASONAL PACKS ---------------- */
+    async function loadPacks() {
+      const snapshot = await db.collection("packs").get();
+      const container = document.getElementById("pack-container");
+      container.innerHTML = "";
+      snapshot.forEach(doc => {
+        const pack = doc.data();
+        container.innerHTML += `<div><strong>${pack.title}</strong> — ${pack.description}</div>`;
+      });
+    }
+
+    /* ---------------- LOAD DAILY CHALLENGE ---------------- */
+    async function loadDailyChallenge() {
+      const dailyRef = await db.collection("daily").orderBy("createdAt", "desc").limit(1).get();
+      const dailyDiv = document.getElementById("daily-challenge");
+      dailyRef.forEach(doc => {
+        const data = doc.data();
+        dailyDiv.innerHTML = `<strong>${data.title}</strong><br>${data.description}`;
+      });
+    }
+
+    /* ---------------- INIT ---------------- */
+    loadLeaderboard();
+    loadChallenges();
+    loadPacks();
+    loadDailyChallenge();
+  </script>
+</body>
+</html>
