@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Challenges — Youth Tech 2000</title>
+<style>
+:root {
+  --accent:#0b74ff; --muted:#6b7280; --bg:#f6f9ff;
+  --card:#ffffff; --radius:10px;
+}
+body{margin:0;font-family:Inter,system-ui,Arial; background:var(--bg); color:#0f172a}
+.wrap{max-width:1200px;margin:24px auto;padding:16px;display:grid;grid-template-columns:320px 1fr 320px;gap:16px}
+@media(max-width:980px){ .wrap{grid-template-columns:1fr;} }
+.panel{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 6px 20px rgba(11,35,80,0.06);}
+.instructions{display:flex;flex-direction:column;gap:12px}
+.instructions h2{margin:0;font-size:1.05rem}
+.editor-area{display:flex;flex-direction:column;height:600px}
+.editor-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);color:white}
+.btn.ghost{background:#f3f6ff;border:1px solid #e6eefc}
+textarea.code {flex:1;width:100%;min-height:420px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;font-size:14px;padding:12px;border-radius:8px;border:1px solid #e6ebf8;resize:vertical;background:#fbfdff}
+pre.console{background:#0b1220;color:#e6f1ff;padding:12px;border-radius:8px;min-height:120px;overflow:auto;font-family:ui-monospace,monospace}
+.tests-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.test{padding:8px;border-radius:8px;background:#fbfdff;border:1px solid #eaf1ff;display:flex;align-items:center;gap:10px}
+.test.pass{border-color:#d4f1dc;background:#f6fff7}
+.test.fail{border-color:#ffd6d6;background:#fff6f6}
+.hint{background:#fffbeb;padding:10px;border-radius:8px;border:1px solid #fbe7a7;color:#7a5b00}
+.muted{color:var(--muted);font-size:0.95rem}
+.small{font-size:0.85rem}
+select {margin-bottom:8px;padding:6px;border-radius:6px;border:1px solid #ccc;width:100%;}
+</style>
+</head>
+<body>
+
+    <nav>
+        <a href="challenges.html">Home Page</a>
+    </nav>
+
+<div class="wrap">
+  <!-- Left Panel: Challenge Selection -->
+  <aside class="panel instructions">
+    <h2>Select a Challenge</h2>
+    <select id="challengeSelect">
+      <option value="sumNumbers">Sum Two Numbers</option>
+      <option value="reverseString">Reverse a String</option>
+      <option value="factorial">Factorial</option>
+      <option value="fibonacci">Fibonacci Sequence</option>
+      <option value="palindrome">Palindrome Check</option>
+    </select>
+    <h3 class="small">Description</h3>
+    <div id="challengeDesc" class="muted small"></div>
+    <h3 class="small">Hints</h3>
+    <div id="challengeHint" class="hint" style="display:none;"></div>
+  </aside>
+
+  <!-- Center Panel: Editor -->
+  <main class="panel editor-area">
+    <div class="editor-toolbar">
+      <button id="runBtn" class="btn primary">Run tests</button>
+      <button id="resetBtn" class="btn ghost">Reset code</button>
+      <button id="hintBtn" class="btn ghost">Show hint</button>
+      <div style="margin-left:auto" class="muted small">Auto-run: <label style="margin-left:6px"><input id="autoRun" type="checkbox"> yes</label></div>
+    </div>
+    <textarea id="codeEditor" class="code"></textarea>
+    <div style="margin-top:12px">
+      <div class="muted small">Output / Console:</div>
+      <pre id="consoleOutput" class="console"></pre>
+    </div>
+  </main>
+
+  <!-- Right Panel: Tests -->
+  <aside class="panel">
+    <h3 class="small">Tests</h3>
+    <div id="tests" class="tests-list"></div>
+  </aside>
+</div>
+
+<script>
+// Challenges Data
+const challenges = {
+  sumNumbers: {
+    desc: "Write a function that returns the sum of two numbers. Treat missing numbers as 0.",
+    starter: "function sumNumbers(a, b) {\n  return 0;\n}\n// window.challenge = { sumNumbers };",
+    tests: [
+      { name:'Function exists', test:fn=>typeof fn==='function', expected:'function' },
+      { name:'2+3', test:fn=>fn(2,3)===5, expected:'5' },
+      { name:'10+0', test:fn=>fn(10)===10, expected:'10' },
+      { name:'0+0', test:fn=>fn()===0, expected:'0' }
+    ],
+    hint: "Use `a = a || 0; b = b || 0;` to handle missing numbers."
+  },
+  reverseString: {
+    desc: "Write a function that reverses a string.",
+    starter: "function reverseString(str) {\n  return '';\n}\n// window.challenge = { reverseString };",
+    tests: [
+      { name:'Function exists', test:fn=>typeof fn==='function', expected:'function' },
+      { name:'hello', test:fn=>fn('hello')==='olleh', expected:'olleh' },
+      { name:'empty string', test:fn=>fn('')==='', expected:'' },
+      { name:'single char', test:fn=>fn('a')==='a', expected:'a' }
+    ],
+    hint: "Use `split(''), reverse(), join('')` on the string."
+  },
+  factorial: {
+    desc: "Write a function that calculates factorial of a number.",
+    starter: "function factorial(n) {\n  return 1;\n}\n// window.challenge = { factorial };",
+    tests: [
+      { name:'Function exists', test:fn=>typeof fn==='function', expected:'function' },
+      { name:'5!', test:fn=>fn(5)===120, expected:'120' },
+      { name:'0!', test:fn=>fn(0)===1, expected:'1' },
+      { name:'3!', test:fn=>fn(3)===6, expected:'6' }
+    ],
+    hint: "Use recursion or a loop: result = 1; multiply from 1 to n."
+  },
+  fibonacci: {
+    desc: "Write a function that returns the nth Fibonacci number (0-indexed).",
+    starter: "function fibonacci(n) {\n  return 0;\n}\n// window.challenge = { fibonacci };",
+    tests: [
+      { name:'Function exists', test:fn=>typeof fn==='function', expected:'function' },
+      { name:'fib(0)', test:fn=>fn(0)===0, expected:'0' },
+      { name:'fib(1)', test:fn=>fn(1)===1, expected:'1' },
+      { name:'fib(6)', test:fn=>fn(6)===8, expected:'8' }
+    ],
+    hint: "Use recursion or a loop: fib(n) = fib(n-1)+fib(n-2)."
+  },
+  palindrome: {
+    desc: "Write a function that checks if a string is a palindrome.",
+    starter: "function palindrome(str) {\n  return false;\n}\n// window.challenge = { palindrome };",
+    tests: [
+      { name:'Function exists', test:fn=>typeof fn==='function', expected:'function' },
+      { name:'racecar', test:fn=>fn('racecar')===true, expected:'true' },
+      { name:'hello', test:fn=>fn('hello')===false, expected:'false' },
+      { name:'empty', test:fn=>fn('')===true, expected:'true' }
+    ],
+    hint: "Check if `str === str.split('').reverse().join('')`."
+  }
+};
+
+// Elements
+const editor = document.getElementById('codeEditor');
+const runBtn = document.getElementById('runBtn');
+const resetBtn = document.getElementById('resetBtn');
+const consoleOutput = document.getElementById('consoleOutput');
+const testsEl = document.getElementById('tests');
+const hintBtn = document.getElementById('hintBtn');
+const hintBox = document.getElementById('challengeHint');
+const autoRun = document.getElementById('autoRun');
+const challengeSelect = document.getElementById('challengeSelect');
+const challengeDesc = document.getElementById('challengeDesc');
+
+let currentChallenge = challengeSelect.value;
+let starter = challenges[currentChallenge].starter;
+
+// Load challenge
+function loadChallenge(name){
+  currentChallenge = name;
+  const ch = challenges[name];
+  challengeDesc.textContent = ch.desc;
+  editor.value = ch.starter;
+  starter = ch.starter;
+  hintBox.textContent = ch.hint;
+  hintBox.style.display = 'none';
+  testsEl.innerHTML='';
+  consoleOutput.textContent='';
+}
+
+challengeSelect.addEventListener('change', e=>loadChallenge(e.target.value));
+
+// Run Tests
+function runTests(){
+  consoleOutput.textContent='';
+  testsEl.innerHTML='';
+  consoleOutput.textContent='Running tests…\n';
+  
+  const ch = challenges[currentChallenge];
+  let fn = null;
+  try{
+    const wrapped = new Function('window', editor.value + '\nreturn (typeof window !== "undefined" && window.challenge && window.challenge[currentChallenge]) ? window.challenge[currentChallenge] : (typeof '+currentChallenge+'==="function"?'+currentChallenge+':null);');
+    fn = wrapped(window);
+  } catch(err){
+    consoleOutput.textContent+='Error: '+(err.message||err)+'\n';
+    ch.tests.forEach(t=>{
+      const div = document.createElement('div');
+      div.className='test fail';
+      div.textContent=`${t.name} — error evaluating code`;
+      testsEl.appendChild(div);
+    });
+    return;
+  }
+
+  let allPassed = true;
+  ch.tests.forEach(t=>{
+    let passed=false;
+    try{passed=!!t.test(fn);}catch(err){passed=false;}
+    const div=document.createElement('div');
+    div.className='test '+(passed?'pass':'fail');
+    div.innerHTML='<strong>'+t.name+'</strong><div style="margin-left:auto" class="small muted">'+(passed?'Passed':'Failed')+'</div>';
+    testsEl.appendChild(div);
+    if(!passed){
+      allPassed=false;
+      const hint=document.createElement('div');
+      hint.className='small muted';
+      hint.textContent='Expected: '+t.expected;
+      testsEl.appendChild(hint);
+    }
+  });
+  consoleOutput.textContent += allPassed ? 'All tests passed ✅' : 'Some tests failed ❌';
+}
+
+runBtn.addEventListener('click',runTests);
+resetBtn.addEventListener('click',()=>{editor.value=starter; consoleOutput.textContent=''; testsEl.innerHTML=''; hintBox.style.display='none';});
+hintBtn.addEventListener('click',()=>hintBox.style.display = hintBox.style.display==='none'?'block':'none');
+
+autoRun.addEventListener('change',()=>{
+  if(autoRun.checked){ editor.addEventListener('input', autoRunHandler);}
+  else{ editor.removeEventListener('input', autoRunHandler);}
+});
+let debounceTimer=null;
+function autoRunHandler(){ clearTimeout(debounceTimer); debounceTimer=setTimeout(runTests,500); }
+
+// Initial load
+loadChallenge(currentChallenge);
+</script>
+
+</body>
+</html>

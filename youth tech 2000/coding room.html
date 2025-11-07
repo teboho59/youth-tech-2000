@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Live Session — Youth Tech 2000</title>
+<link rel="stylesheet" href="assets/css/styles.css"> <!-- optional: global styles -->
+
+<style>
+:root {
+  --accent:#0b74ff; --muted:#6b7280; --bg:#f6f9ff;
+  --card:#ffffff; --radius:10px;
+}
+body{margin:0;font-family:Inter,system-ui,Arial; background:var(--bg); color:#0f172a}
+
+.wrap{max-width:1200px;margin:24px auto;padding:16px;display:grid;grid-template-columns:320px 1fr 320px;gap:16px}
+@media(max-width:980px){ .wrap{grid-template-columns:1fr;} }
+
+.panel{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 6px 20px rgba(11,35,80,0.06);}
+h2,h3{margin:0}
+
+.video-container{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+video{width:100%; max-width:45%; border-radius:8px; background:#000; border:2px solid #0b74ff}
+
+textarea#codeEditor{width:100%; height:250px; font-family:monospace; border-radius:8px; border:1px solid #e6ebf8; padding:8px; resize:none}
+#chatMessages{height:200px; overflow-y:auto; background:#f3f6ff; padding:8px; border-radius:6px; margin-bottom:8px}
+#chatMessages p{margin:4px 0; padding:6px 8px; background:#ffffff; border-radius:6px}
+#chatForm{display:flex; gap:5px}
+#chatForm input{flex:1;padding:6px; border-radius:6px; border:1px solid #ccc}
+#chatForm button{padding:6px 12px; border-radius:6px; background:var(--accent); color:white; border:none; cursor:pointer}
+
+.btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);color:white}
+.btn.ghost{background:#f3f6ff;border:1px solid #e6eefc}
+</style>
+</head>
+
+<body>
+    <nav>
+        <a href="dashboard.html">Dashboard</a>
+    </nav>
+    
+    <div class="wrap">
+
+  <!-- Left Panel: Instructions / Session Info -->
+  <aside class="panel instructions">
+    <h2>Live Mentorship Room</h2>
+    <p class="muted">Session ID: <span id="sessionInfo">ABC123</span></p>
+    <p class="muted">Mentor: Zanele M.</p>
+    <p class="muted">Topic: HTML & JavaScript Practice</p>
+    <button id="startSession" class="btn primary">Start Session</button>
+    <button id="joinSession" class="btn ghost">Join Session</button>
+    <button id="hangupButton" class="btn ghost">End Call</button>
+  </aside>
+
+  <!-- Center Panel: Video + Shared Code Editor -->
+  <main class="panel editor-area">
+    <div class="video-container">
+      <video id="localVideo" autoplay muted playsinline></video>
+      <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+
+    <h3>💻 Shared Code Editor</h3>
+    <textarea id="codeEditor" placeholder="Write code here..."></textarea>
+    <button id="runCode" class="btn primary" style="margin-top:8px">Run Code</button>
+    <iframe id="preview" sandbox="allow-scripts allow-same-origin" style="width:100%; height:200px; margin-top:8px; border-radius:6px; border:1px solid #ccc;"></iframe>
+  </main>
+
+  <!-- Right Panel: Chat & Notifications -->
+  <aside class="panel">
+    <h3>💬 Live Chat</h3>
+    <div id="chatMessages"></div>
+    <form id="chatForm">
+      <input type="text" id="chatInput" placeholder="Type a message..." />
+      <button type="submit">Send</button>
+    </form>
+
+    <h3 style="margin-top:16px">🔔 Notifications</h3>
+    <ul id="notificationList">
+      <li>New coding challenge available!</li>
+      <li>Upcoming mentorship session at 2 PM</li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+// Simple code preview
+const runBtn = document.getElementById('runCode');
+const codeEditor = document.getElementById('codeEditor');
+const preview = document.getElementById('preview');
+
+runBtn.addEventListener('click', () => {
+  preview.srcdoc = codeEditor.value;
+});
+
+// Simple chat
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
+const chatMessages = document.getElementById('chatMessages');
+
+chatForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if(!chatInput.value) return;
+  const p = document.createElement('p');
+  p.textContent = chatInput.value;
+  chatMessages.appendChild(p);
+  chatInput.value = '';
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+</script>
+</body>
+</html>
+
+
+
+
